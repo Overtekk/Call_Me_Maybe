@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42.fr>         +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:32:54 by roandrie        #+#    #+#               #
-#  Updated: 2026/02/23 17:19:58 by roandrie        ###   ########.fr        #
+#  Updated: 2026/02/23 17:21:40 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -18,7 +18,7 @@ PDB 		=	uv run python -m pdb
 FLAKE8		=	uv run flake8
 MYPY 		=	uv run mypy
 MYPY_FLAGS	=	--warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
-SRC_MODULE		=	src
+SRC_MODULE	=	src
 UV			=	curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # ===================
