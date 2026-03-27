@@ -6,12 +6,11 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 14:05:49 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/27 15:14:06 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 import sys
-import argparse
 
 from src.utils.display import print_error
 from src.parser import argument_parser
@@ -20,9 +19,10 @@ from src.parser import argument_parser
 def main() -> int:
     try:
 
-        argument_parser()
+        args = argument_parser()
+        print(args)
 
-    except argparse.ArgumentError as e:
+    except Exception as e:
         print_error(e)
 
 

@@ -6,17 +6,16 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:02:23 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 14:36:53 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/27 15:12:07 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 import argparse
-import pathlib
 
-from src.parser.path_checker import validate_input_path
+from src.parser.path_checker import validate_json_input, validate_json_output
 
 
-def argument_parser() -> None:
+def argument_parser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="Call Me Maybe",
         description=("Function calling tool that translates natural "
@@ -33,7 +32,7 @@ def argument_parser() -> None:
                 "default: data/input/functions_definition.json)\n\n"),
         default="data/input/functions_definition.json",
         metavar="file.json",
-        type=pathlib.Path
+        type=validate_json_input
     )
     parser.add_argument(
         "-i", "--input",
@@ -41,7 +40,7 @@ def argument_parser() -> None:
                 "(default: data/input/function_calling_tests.json)\n\n"),
         default="data/input/function_calling_tests.json",
         metavar="file.json",
-        type=pathlib.Path
+        type=validate_json_input
     )
     parser.add_argument(
         "-o", "--output",
@@ -49,7 +48,7 @@ def argument_parser() -> None:
                 "(default: data/output/function_calling_results.json)\n\n"),
         default="data/output/function_calling_results.json",
         metavar="file.json",
-        type=pathlib.Path
+        type=validate_json_output
     )
     parser.add_argument(
         "-v", "--visualizer",
@@ -65,5 +64,4 @@ def argument_parser() -> None:
     )
 
     args = parser.parse_args()
-    print(args.functions_definition)
-    print(validate_input_path(args.functions_definition))
+    return args
