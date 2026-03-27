@@ -6,17 +6,19 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:02:23 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 15:12:07 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/27 16:02:21 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 import argparse
+import sys
 
 from src.parser.path_checker import validate_json_input, validate_json_output
+from src.utils import print_error
 
 
 def argument_parser() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
+    parser = RichArgumentParser(
         prog="Call Me Maybe",
         description=("Function calling tool that translates natural "
                         "language prompts into structured function calls"),
@@ -65,3 +67,10 @@ def argument_parser() -> argparse.Namespace:
 
     args = parser.parse_args()
     return args
+
+
+class RichArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        print_error(message)
+        self.print_usage(sys.stderr)
+        sys.exit(2)
