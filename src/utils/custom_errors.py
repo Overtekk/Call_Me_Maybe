@@ -1,22 +1,20 @@
 # ************************************************************************* #
 #                                                                           #
 #                                                      :::      ::::::::    #
-#  __init__.py                                       :+:      :+:    :+:    #
+#  custom_errors.py                                  :+:      :+:    :+:    #
 #                                                  +:+ +:+         +:+      #
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
-#  Created: 2026/03/27 10:28:03 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 15:22:02 by roandrie        ###   ########.fr        #
+#  Created: 2026/03/27 15:20:16 by roandrie        #+#    #+#               #
+#  Updated: 2026/03/27 15:21:37 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from src.utils.display import print_error
-from src.utils.files import is_file_exist, is_folder_exist, is_file_json
+import argparse
+
+from src.utils import print_error
 
 
-__all__ = [
-    print_error,
-    is_folder_exist,
-    is_file_exist,
-    is_file_json,
-]
+class ArgumentsError(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        print_error(message)
