@@ -9,6 +9,7 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/SCORE-None-%235CB338?style=for-the-badge&logo=42&logoColor=white"/>
+  <img src="https://img.shields.io/badge/BONUS-None-%235CB338?style=for-the-badge&logo=starship&logoColor=white"/>
   <img src="https://img.shields.io/badge/COMPLETED-No-%23007ACC?style=for-the-badge&logo=calendar&logoColor=white"/>
 </div>
 
@@ -23,9 +24,15 @@
 
 ## ✏️ Quick Start
 
+## ✏️ Quick Start
+
 ```bash
-todo
+make  # install all dependencies and run the script
+
+make run  # alternatively you can also use this
 ```
+> [!NOTE]
+> If you don't have `uv` installed, run `make install`
 
 ---
 
@@ -108,8 +115,12 @@ git clone https://github.com/Overtekk/Call_me_Maybe.git
 
 ### 2. Run:
 ```bash
-todo
+make  # install all dependencies and run the script
+
+make run  # alternatively you can also use this
 ```
+> [!NOTE]
+> If you don't have `uv` installed, run `make install`
 
 ### Example of use:
 
@@ -143,6 +154,17 @@ todo
 
 ## 📚 Resources
 
-todo
+### Documentation for the `Rich` library
+| Resource | Description |
+| :------: | :---------: |
+| [Rich docs ‒ Official Documentation](https://rich.readthedocs.io/en/stable/) | Using the `rich` library to format the text using colors, style etc... |
+
+### Documentation for the `argparse` library
+| Resource | Description |
+| :------: | :---------: |
+| [Docs Python ‒ argparse documentation](https://docs.python.org/3/library/argparse.html) | Using specific things with argparse |
+
+### IA was use to:
+-
 
 ---
