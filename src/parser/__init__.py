@@ -5,18 +5,16 @@
 #                                                  +:+ +:+         +:+      #
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
-#  Created: 2026/03/27 10:28:03 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 14:48:57 by roandrie        ###   ########.fr        #
+#  Created: 2026/03/27 14:04:48 by roandrie        #+#    #+#               #
+#  Updated: 2026/03/27 14:34:36 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from src.utils.display import print_error
-from src.utils.files import is_file_exist, is_folder_exist, is_file_json
+from src.parser.arguments_checker import argument_parser
+from src.parser.path_checker import validate_input_path
 
 
 __all__ = [
-    print_error,
-    is_folder_exist,
-    is_file_exist,
-    is_file_json
+    argument_parser,
+    validate_input_path
 ]
