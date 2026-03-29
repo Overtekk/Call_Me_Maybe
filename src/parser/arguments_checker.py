@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:02:23 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 16:02:21 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/29 21:07:23 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -34,6 +34,7 @@ def argument_parser() -> argparse.Namespace:
                 "default: data/input/functions_definition.json)\n\n"),
         default="data/input/functions_definition.json",
         metavar="file.json",
+        dest="func_def",
         type=validate_json_input
     )
     parser.add_argument(
@@ -42,6 +43,7 @@ def argument_parser() -> argparse.Namespace:
                 "(default: data/input/function_calling_tests.json)\n\n"),
         default="data/input/function_calling_tests.json",
         metavar="file.json",
+        dest="func_call",
         type=validate_json_input
     )
     parser.add_argument(

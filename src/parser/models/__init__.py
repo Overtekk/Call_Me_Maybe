@@ -5,16 +5,7 @@
 #                                                  +:+ +:+         +:+      #
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
-#  Created: 2026/03/27 14:04:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/29 20:51:53 by roandrie        ###   ########.fr        #
+#  Created: 2026/03/29 20:55:23 by roandrie        #+#    #+#               #
+#  Updated: 2026/03/29 21:15:29 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
-
-from src.parser.arguments_checker import argument_parser
-from src.parser.parse_json_file import files_validator
-
-
-__all__ = [
-    argument_parser,
-    files_validator
-]

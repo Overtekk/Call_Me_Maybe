@@ -1,20 +1,30 @@
 # ************************************************************************* #
 #                                                                           #
 #                                                      :::      ::::::::    #
-#  __init__.py                                       :+:      :+:    :+:    #
+#  schemas.py                                        :+:      :+:    :+:    #
 #                                                  +:+ +:+         +:+      #
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
-#  Created: 2026/03/27 14:04:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/29 20:51:53 by roandrie        ###   ########.fr        #
+#  Created: 2026/03/29 20:55:21 by roandrie        #+#    #+#               #
+#  Updated: 2026/03/29 21:02:28 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from src.parser.arguments_checker import argument_parser
-from src.parser.parse_json_file import files_validator
+from enum import Enum
+from pydantic import BaseModel
 
 
-__all__ = [
-    argument_parser,
-    files_validator
-]
+class JsonFunctionCalling(BaseModel):
+    prompt: str
+
+
+class JsonFunctionDefinition(BaseModel):
+    name: str
+    description: str
+    parameters: dict[str, dict["type", 'Type']]
+    returns: dict["type", 'Type']
+
+
+class Type(Enum):
+    NUMBER = "number"
+    STRING = "string"
