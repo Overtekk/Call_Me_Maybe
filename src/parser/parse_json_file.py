@@ -6,33 +6,48 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/29 16:03:32 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/29 21:16:31 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/29 22:31:14 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
+
+from typing import List, Union
 
 import json
 import pathlib
 
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 from json import JSONDecodeError
 
 from src.parser.models.schemas import (JsonFunctionCalling,
                                        JsonFunctionDefinition)
 
 
-def files_validator(type: str, file: pathlib.__file__) -> None:
+def validate_json_content(
+    file_path: pathlib.Path,
+    schema_type: str) -> (Union[List[JsonFunctionDefinition],
+                                List[JsonFunctionCalling]]):
     try:
-        json.load(file)
+        content = file_path.read_text(encoding='utf-8')
+        data = json.loads(content)
 
-        if type == "func_calling_tests":
-            JsonFunctionCalling(file)
+        if schema_type == "func_call":
+            adapter = TypeAdapter(List[JsonFunctionCalling])
+            return adapter.validate_python(data)
+
+        elif schema_type == "func_def":
+            adapter = TypeAdapter(List[JsonFunctionDefinition])
+            return adapter.validate_python(data)
+
         else:
-            JsonFunctionDefinition(file)
+            raise ValueError(f"Unknown schema type: {schema_type}")
 
-    except JSONDecodeError:
-        raise JSONDecodeError(f"malformated json file for {file}")
-    except ValidationError:
-        raise ValidationError(f"bad writing for {file}")
-    except Exception:
-        raise Exception(f"an error have occured for {file}")
+    except JSONDecodeError as e:
+        raise ValueError(f"Syntax error in JSON file '{file_path}': {e}")
+
+    except ValidationError as e:
+        raise ValueError(f"Validation failed for '{file_path}':\n{e}")
+
+    except Exception as e:
+        raise Exception("An unexpected error occurred while validating "
+                        f"'{file_path}': {e}")
 

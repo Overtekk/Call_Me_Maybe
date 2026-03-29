@@ -164,7 +164,15 @@ todo
 | :------: | :---------: |
 | [Docs Python ‒ argparse documentation](https://docs.python.org/3/library/argparse.html) | Using specific things with argparse |
 
+### Documentation for the `pydantic` library
+| Resource | Description |
+| :------: | :---------: |
+| [Docs Pydantic ‒ Type Adapter](https://docs.pydantic.dev/latest/api/type_adapter/#pydantic.type_adapter.TypeAdapter) | Use **type adapters** to perform better validation |
+
 ### IA was use to:
 -
 
 ---
+
+
+

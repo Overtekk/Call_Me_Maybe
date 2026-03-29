@@ -6,37 +6,38 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/29 21:18:07 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/29 22:21:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 import sys
 
-from json import JSONDecodeError
-from pydantic import ValidationError
-
 from src.utils.display import print_error
-from src.parser import argument_parser, files_validator
+from src.parser import argument_parser, validate_json_content
 
 
 def main() -> int:
     try:
         args = argument_parser()
 
-        input_func = {
-            "func_calling_tests": args.func_call,
+        validation_map = {
+            "func_call": args.func_call,
             "func_def": args.func_def
         }
 
-        try:
-            for type, func in input_func.items():
-             with open(func, 'r', encoding='utf-8') as f:
-                 files_validator(type, f)
-        except (ValidationError, JSONDecodeError) as e:
-            print_error(e)
+        validated_data = {}
+        for schema_type, path in validation_map.items():
+            validated_data[schema_type] = validate_json_content(path,
+                                                                schema_type)
+        print(f"Successfully validated {len(validated_data['func_def'])} function definitions.")
+        return 0
 
-    except Exception as e:
+    except ValueError as e:
         print_error(e)
+        return 1
+    except Exception as e:
+        print_error(f"Critical error: {e}")
+        return 1
 
 
 if __name__ == "__main__":
