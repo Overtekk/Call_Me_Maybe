@@ -6,9 +6,17 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:27:44 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 16:24:40 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 16:57:53 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
+"""
+Path validation module for the Call Me Maybe tool.
+
+This module provides high-level validation for file system paths provided via
+the command line interface. It verifies the existence of input files, checks
+for JSON extensions, manages directory creation for output files, and strictly
+enforces read/write/execute permissions to ensure system stability.
+"""
 
 import pathlib
 import os
@@ -18,6 +26,23 @@ from src.utils import is_file_exist, is_folder_exist, is_file_json
 
 
 def validate_json_input(path_str: str) -> pathlib.Path:
+    """
+    Validate that a given path points to an existing, readable JSON file.
+
+    This function is intended to be used as a 'type' factory for argparse.
+    It ensures the file exists on the disk, has a valid .json extension,
+    and that the current user has read permissions.
+
+    Args:
+        path_str (str): The raw string path provided by the user.
+
+    Raises:
+        argparse.ArgumentTypeError: If the file does not exist, is not a
+                                    JSON file, or is not readable.
+
+    Returns:
+        pathlib.Path: The validated path object.
+    """
     path = pathlib.Path(path_str)
 
     if not is_file_exist(path):
@@ -32,6 +57,25 @@ def validate_json_input(path_str: str) -> pathlib.Path:
 
 
 def validate_json_output(path_str: str) -> pathlib.Path:
+    """
+    Validate and prepare the output path for result storage.
+
+    Verifies the .json extension and checks if the parent directory is
+    writable. If the parent directory does not exist, it creates it
+    recursively. It also touches the file to ensure it can be created/accessed.
+
+    Args:
+        path_str (str): The raw string path provided by the user.
+
+    Raises:
+        argparse.ArgumentTypeError: If the extension is invalid, if write
+                                    permissions are denied for the directory,
+                                    or if the file cannot be read after
+                                    creation.
+
+    Returns:
+        pathlib.Path: The validated and prepared path object.
+    """
     path = pathlib.Path(path_str)
 
     if path.suffix != ".json":

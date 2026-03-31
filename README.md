@@ -169,8 +169,13 @@ todo
 | :------: | :---------: |
 | [Docs Pydantic ‒ Type Adapter](https://docs.pydantic.dev/latest/api/type_adapter/#pydantic.type_adapter.TypeAdapter) | Use **type adapters** to perform better validation |
 
+### Constrained Decoding:
+| Resource | Description |
+| :------: | :---------: |
+| [Aidencooper ‒ Constrained Decoding](https://www.aidancooper.co.uk/constrained-decoding/) | Guide to understand what is constrained decoding and how to do it |
+
 ### IA was use to:
--
+- **Help writing docstrigs** ‒ ensure that the docstrings is clear and short. I writes something and give it to have a better writing style than me because docstrings is important.
 
 ---
 

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 09:46:37 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 11:04:37 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 16:43:04 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """Terminal output management utilities.
@@ -24,6 +24,8 @@ Attributes:
 """
 
 from rich.console import Console
+from rich.errors import StyleSyntaxError
+from rich.style import Style
 
 
 standard_console = Console()
@@ -40,3 +42,46 @@ def print_error(message: str) -> None:
     prefix = "Error: "
     content = f"{message}"
     error_console.print(f"[bold red]{prefix + content}[/bold red]")
+
+
+def print_success(message: str) -> None:
+    """
+    Display a formatted success message on the standard stream.
+
+    Args:
+        message (str): The specific message to be displayed.
+    """
+    standard_console.print(f"[green]{message}[/green]")
+
+
+def print_log(message: str) -> None:
+    """
+    Display a formatted log message on the standard stream using 'log' from
+    rich. Using '_stack_offset' allow good naming for the file.
+
+    Args:
+        message (str): The specific message to be displayed.
+    """
+    standard_console.log(message, _stack_offset=2)
+
+
+def print_rule(message: str, color: str = None) -> None:
+    """
+    Display a horizontal rule with a message at the center and with a
+    specific color. If the color doesn't exist or if is None, print it
+    bold blue by default.
+
+    Args:
+        message (str): The specific message to be displayed.
+        color (str): The color used for the rule.
+    """
+    default = "bold blue"
+    style_rule = color if color else default
+
+    try:
+        Style.parse(style_rule)
+    except StyleSyntaxError:
+        style_rule = default
+        print_error(f"'{color}' is unkown. Switching to default (bold blue).")
+
+    standard_console.rule(message, style=style_rule)
