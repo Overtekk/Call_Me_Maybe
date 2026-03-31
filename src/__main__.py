@@ -6,13 +6,13 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 17:08:20 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 17:44:04 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 import sys
 
-from src.utils.display import print_error, print_log, print_rule
+from src.utils import print_error, print_log, print_rule, print_logo
 from src.parser import argument_parser, validate_json_content
 
 
@@ -30,13 +30,14 @@ def main() -> int:
             validated_data[schema_type] = validate_json_content(path,
                                                                 schema_type)
 
-        if args.debug or args.visualizer:
-            print_rule("")
-            print_log("Successfully validated "
-                      f"{len(validated_data['func_def'])} function "
-                      "definitions.")
-            print_log("Successfully validated "
-                      f"{len(validated_data['func_call'])} function calling.")
+        print_logo()
+        print_rule("")
+        print_log("Successfully validated "
+                    f"{len(validated_data['func_def'])} function "
+                    "definitions.")
+        print_log("Successfully validated "
+                    f"{len(validated_data['func_call'])} function calling.")
+
         if args.debug:
             print_rule("", "white")
             print(f"\nfunc_def:\n{validated_data['func_def']}\n")
