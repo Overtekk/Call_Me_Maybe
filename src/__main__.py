@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/29 22:21:20 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 12:45:34 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -29,8 +29,12 @@ def main() -> int:
         for schema_type, path in validation_map.items():
             validated_data[schema_type] = validate_json_content(path,
                                                                 schema_type)
-        print(f"Successfully validated {len(validated_data['func_def'])} function definitions.")
-        return 0
+
+        if args.debug:
+            print(f"Successfully validated {len(validated_data['func_def'])} "
+                  "function definitions.")
+            print(f"Successfully validated {len(validated_data['func_call'])} "
+                  "function calling.")
 
     except ValueError as e:
         print_error(e)
