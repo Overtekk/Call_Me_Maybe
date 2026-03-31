@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 16:44:18 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 17:08:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -42,8 +42,10 @@ def main() -> int:
             print(f"\nfunc_def:\n{validated_data['func_def']}\n")
             print(f"func_call:\n{validated_data['func_call']}")
 
+        return 0
+
     except ValueError as e:
-        print_error(e)
+        print_error(f"{e}")
         return 1
     except Exception as e:
         print_error(f"Critical error: {e}")

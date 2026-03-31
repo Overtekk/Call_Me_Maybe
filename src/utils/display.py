@@ -6,10 +6,11 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 09:46:37 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 16:43:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 17:04:59 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
-"""Terminal output management utilities.
+"""
+Terminal output management utilities.
 
 This module provides a centralized interface for displaying formatted
 messages using the Rich library. It manages distinct output streams
@@ -65,23 +66,22 @@ def print_log(message: str) -> None:
     standard_console.log(message, _stack_offset=2)
 
 
-def print_rule(message: str, color: str = None) -> None:
+def print_rule(message: str, color: str = "bold blue") -> None:
     """
     Display a horizontal rule with a message at the center and with a
-    specific color. If the color doesn't exist or if is None, print it
-    bold blue by default.
+    specific color. If the color doesn't exist or isn't specify, the color
+    bold blue will by the default color.
 
     Args:
         message (str): The specific message to be displayed.
         color (str): The color used for the rule.
     """
-    default = "bold blue"
-    style_rule = color if color else default
+    style_rule = color
 
     try:
         Style.parse(style_rule)
     except StyleSyntaxError:
-        style_rule = default
+        style_rule = "bold blue"
         print_error(f"'{color}' is unkown. Switching to default (bold blue).")
 
     standard_console.rule(message, style=style_rule)

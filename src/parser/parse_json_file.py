@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/29 16:03:32 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 16:53:47 by roandrie        ###   ########.fr        #
+#  Updated: 2026/03/31 17:01:41 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -81,4 +81,3 @@ def validate_json_content(
     except Exception as e:
         raise Exception("An unexpected error occurred while validating "
                         f"'{file_path}': {e}")
-
