@@ -177,7 +177,7 @@ todo
 ### Other documentation, useful links and references
 | Resource | Description |
 | :------: | :---------: |
-| [Github of **shadowx254**](https://github.com/shadox254/Call-Me-Maybe) | Help building my project and understand what to do.
+| [Github of **shadox254**](https://github.com/shadox254/Call-Me-Maybe) | Help building my project and understand what to do.
 | [Github of **69Nesta**](https://github.com/69Nesta/42-Call-Me-Maybe) | Same as above.
 
 ### IA was use to:
