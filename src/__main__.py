@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 17:44:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/02 11:38:05 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -14,6 +14,7 @@ import sys
 
 from src.utils import print_error, print_log, print_rule, print_logo
 from src.parser import argument_parser, validate_json_content
+from src.engine import CallMeMaybe
 
 
 def main() -> int:
@@ -33,15 +34,24 @@ def main() -> int:
         print_logo()
         print_rule("")
         print_log("Successfully validated "
-                    f"{len(validated_data['func_def'])} function "
-                    "definitions.")
+                  f"{len(validated_data['func_def'])} function "
+                  "definitions.")
         print_log("Successfully validated "
-                    f"{len(validated_data['func_call'])} function calling.")
+                  f"{len(validated_data['func_call'])} function calling.")
 
         if args.debug:
             print_rule("", "white")
             print(f"\nfunc_def:\n{validated_data['func_def']}\n")
             print(f"func_call:\n{validated_data['func_call']}")
+
+        ai = CallMeMaybe(
+            functions_definition_path=validated_data['func_def'],
+            output_file_path=args.output,
+            visualizer=args.visualizer,
+            debug=args.debug
+        )
+
+        ai.init()
 
         return 0
 
