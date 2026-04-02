@@ -6,13 +6,14 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/02 11:38:05 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/02 14:39:55 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 import sys
 
 from src.utils import print_error, print_log, print_rule, print_logo
+from src.debug import print_validated_data
 from src.parser import argument_parser, validate_json_content
 from src.engine import CallMeMaybe
 
@@ -41,8 +42,9 @@ def main() -> int:
 
         if args.debug:
             print_rule("", "white")
-            print(f"\nfunc_def:\n{validated_data['func_def']}\n")
-            print(f"func_call:\n{validated_data['func_call']}")
+            print("-DEBUG-")
+            print_validated_data(validated_data['func_def'])
+            print_validated_data(validated_data['func_call'])
 
         ai = CallMeMaybe(
             functions_definition_path=validated_data['func_def'],
@@ -50,8 +52,6 @@ def main() -> int:
             visualizer=args.visualizer,
             debug=args.debug
         )
-
-        ai.init()
 
         return 0
 
