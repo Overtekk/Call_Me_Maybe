@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/02 14:36:09 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/04 14:30:38 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -17,6 +17,7 @@ from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
 from src.utils import print_log
+from src.engine.llm_instructions_model import get_instructions
 
 
 class CallMeMaybe(BaseModel):
@@ -46,4 +47,9 @@ class CallMeMaybe(BaseModel):
             raise ValueError(f"error while initializing model: {e}")
 
     def run(self, prompt: str) -> None:
-        self._model.encode(prompt)
+        instructions = get_instructions(self.functions_definition_path, prompt)
+
+        if self.debug:
+            print_log(f"-DEBUG-\nInstructions:\n{instructions}")
+
+        self._model.encode(instructions)
