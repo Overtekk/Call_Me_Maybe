@@ -6,11 +6,13 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/04 14:35:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/13 10:15:55 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 from typing import Any, List
+
+import json
 
 from pydantic import BaseModel, Field, PrivateAttr
 
@@ -37,7 +39,7 @@ class Prompt(BaseModel):
 
         self._format_prompt()
 
-    def get_next_promp(self) -> str:
+    def get_next_prompt(self) -> str:
         if self._list_prompts:
             return self._list_prompts.pop(-1)
         else:
@@ -45,8 +47,7 @@ class Prompt(BaseModel):
 
     def _format_prompt(self) -> None:
         for prompt in self.functions_calling:
-            formatted_prompt = '"prompt": '
-            formatted_prompt += f'"{prompt.prompt}"'
+            formatted_prompt = json.dumps({"prompt": prompt.prompt})
 
             if self.debug:
                 print_log(f"-DEBUG-\nNew prompt added: {formatted_prompt}")

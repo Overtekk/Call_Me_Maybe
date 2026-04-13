@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 09:23:20 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/13 10:20:58 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -65,7 +65,7 @@ def main() -> int:
             print_rule("")
 
         while True:
-            prompt = prompter.get_next_promp()
+            prompt = prompter.get_next_prompt()
 
             if prompt == "empty":
                 if args.debug:
@@ -79,9 +79,9 @@ def main() -> int:
     except ValueError as e:
         print_error(f"{e}")
         return 1
-    except Exception as e:
-        print_error(f"Critical error: {e}")
-        return 1
+    # except Exception as e:
+    #     print_error(f"Critical error: {e}")
+    #     return 1
 
 
 if __name__ == "__main__":

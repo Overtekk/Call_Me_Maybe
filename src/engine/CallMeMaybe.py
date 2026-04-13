@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 08:47:17 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/13 11:41:27 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -52,4 +52,7 @@ class CallMeMaybe(BaseModel):
         if self.debug:
             print_log(f"-DEBUG-\nInstructions:\n{instructions}")
 
-        self._model.encode(instructions)
+        tensors = self._model.encode(instructions)
+        probabilities = self._model.get_logits_from_input_ids(tensors.tolist()[0])
+        sorted_tokens = sorted(probabilities, reverse=True)
+        vocab_path = self._model.get_path_to_vocab_file()
