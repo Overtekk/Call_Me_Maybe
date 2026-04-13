@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/04 14:30:11 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/13 09:23:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -14,13 +14,15 @@ import sys
 
 from src.utils import print_error, print_log, print_rule, print_logo
 from src.debug import print_validated_data
-from src.parser import argument_parser, validate_json_content
+from src.parser import (argument_parser, validate_json_content,
+                        check_llm_available)
 from src.engine import CallMeMaybe, Prompt
 
 
 def main() -> int:
     try:
         args = argument_parser()
+        check_llm_available()
 
         validation_map = {
             "func_call": args.func_call,
