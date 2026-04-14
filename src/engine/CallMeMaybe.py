@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 09:57:11 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 10:18:49 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -48,7 +48,7 @@ class CallMeMaybe(BaseModel):
             self._model = Small_LLM_Model()
 
             self._vocab = Vocabulary(
-                self._model.get_path_to_vocab_file,
+                self._model.get_path_to_vocab_file(),
                 self.debug)
 
         except Exception as e:
@@ -64,4 +64,4 @@ class CallMeMaybe(BaseModel):
 
         tensors = self._model.encode(instructions)
         probabilities = self._model.get_logits_from_input_ids(tensors.tolist()[0])
-        sorted_tokens = sorted(probabilities, reverse=True)
+        higher_token = max(probabilities)

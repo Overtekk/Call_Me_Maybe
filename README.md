@@ -179,6 +179,7 @@ todo
 | :------: | :---------: |
 | [Github of **shadox254**](https://github.com/shadox254/Call-Me-Maybe) | Help building my project and understand what to do.
 | [Github of **69Nesta**](https://github.com/69Nesta/42-Call-Me-Maybe) | Same as above.
+| [Github of **alizealebaron**](https://github.com/alizealebaron/call_me_maybe/tree/main) | Same as above.
 
 ### IA was use to:
 - **As a supervisor** ‒ this subject is a bit complexe and not very clear. I'm was lost after the parsing and didn't know what to do (even after searching on github). So I use IA to help me, explaim what I was supposed to do, how to do that. But I make sure that I understand and that it did not give code.
