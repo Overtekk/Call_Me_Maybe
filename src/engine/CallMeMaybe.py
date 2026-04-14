@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 10:18:49 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 14:54:05 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -48,8 +48,9 @@ class CallMeMaybe(BaseModel):
             self._model = Small_LLM_Model()
 
             self._vocab = Vocabulary(
-                self._model.get_path_to_vocab_file(),
-                self.debug)
+                path_file=self._model.get_path_to_vocab_file(),
+                debug=self.debug
+            )
 
         except Exception as e:
             raise ValueError(f"error while initializing model: {e}")
@@ -62,6 +63,10 @@ class CallMeMaybe(BaseModel):
         if self.debug:
             print_log(f"-DEBUG-\nInstructions:\n{instructions}")
 
-        tensors = self._model.encode(instructions)
-        probabilities = self._model.get_logits_from_input_ids(tensors.tolist()[0])
-        higher_token = max(probabilities)
+
+    def get_function_name(self, prompt: str) -> str:
+        current_output = ""
+        current_tokens: List[int] = []
+
+        current_sequence = self._model.encode(prompt)
+        probabilities = self._model.get_logits_from_input_ids(current_sequence.tolist()[0])

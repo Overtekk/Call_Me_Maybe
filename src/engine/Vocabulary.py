@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 10:58:48 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 11:22:30 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -29,9 +29,10 @@ class Vocabulary(BaseModel):
     )
 
     _vocab_path: str = PrivateAttr()
+    _vocab_data: Dict = PrivateAttr()
 
     def model_post_init(self, context: Any) -> None:
-        self._load_vocab(self.path_file)
+        self.load_vocab(self.path_file)
         return super().model_post_init(context)
 
     def load_vocab(self, path: str) -> None:
@@ -42,7 +43,7 @@ class Vocabulary(BaseModel):
             if self.debug:
                 print_log("Vocabulary loaded without problem!")
 
-            self.vocab_data = vocab
+            self._vocab_data = vocab
 
         except Exception as e:
             raise ValueError(f"error while loading vocab path {e}")
@@ -50,7 +51,7 @@ class Vocabulary(BaseModel):
     def get_id_to_token_vocab(self) -> Dict[int, str]:
         reverse_vocab = {}
 
-        for key, value in self.vocab_data.items():
+        for key, value in self._vocab_data.items():
             reverse_vocab[value] = key
 
         return reverse_vocab
