@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 11:41:27 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 09:57:11 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field, PrivateAttr
 
 from src.utils import print_log
 from src.engine.llm_instructions_model import get_instructions
+from src.engine.Vocabulary import Vocabulary
 
 
 class CallMeMaybe(BaseModel):
@@ -37,14 +38,23 @@ class CallMeMaybe(BaseModel):
     )
 
     _model: Small_LLM_Model = PrivateAttr()
+    _vocab: Vocabulary = PrivateAttr()
 
-    def model_post_init(self, _: Any) -> None:
+    def model_post_init(self, context: Any) -> None:
         try:
             if self.debug or self.visualizer:
                 print_log("Initializing LLM...")
+
             self._model = Small_LLM_Model()
+
+            self._vocab = Vocabulary(
+                self._model.get_path_to_vocab_file,
+                self.debug)
+
         except Exception as e:
             raise ValueError(f"error while initializing model: {e}")
+
+        return super().model_post_init(context)
 
     def run(self, prompt: str) -> None:
         instructions = get_instructions(self.functions_definition_path, prompt)
@@ -55,4 +65,3 @@ class CallMeMaybe(BaseModel):
         tensors = self._model.encode(instructions)
         probabilities = self._model.get_logits_from_input_ids(tensors.tolist()[0])
         sorted_tokens = sorted(probabilities, reverse=True)
-        vocab_path = self._model.get_path_to_vocab_file()
