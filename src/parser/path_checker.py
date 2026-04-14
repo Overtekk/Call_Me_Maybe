@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:27:44 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 08:49:57 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 16:22:09 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -82,13 +82,15 @@ def validate_json_output(path_str: str) -> pathlib.Path:
         raise argparse.ArgumentTypeError(f"File '{path}' is not json.")
 
     folder_parent = path.parent
+
+    if not is_folder_exist(folder_parent):
+        folder_parent.mkdir(parents=True, exist_ok=True)
+
     if (not os.access(folder_parent.parent, os.W_OK | os.X_OK)
             or not os.access(folder_parent, os.W_OK | os.X_OK)):
         raise argparse.ArgumentTypeError("Write permission denied for "
                                          f"directory '{folder_parent}")
 
-    if not is_folder_exist(folder_parent):
-        folder_parent.mkdir(parents=True, exist_ok=True)
     path.touch(exist_ok=True)
 
     if not os.access(path, os.R_OK):
