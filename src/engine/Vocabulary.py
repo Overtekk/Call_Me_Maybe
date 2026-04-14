@@ -6,11 +6,11 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 11:22:30 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 16:11:12 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import json
 
@@ -56,3 +56,17 @@ class Vocabulary(BaseModel):
 
         return reverse_vocab
 
+    def get_valid_token_ids(self, current_output: str,
+                            valid_names: List[str]) -> List[int]:
+        valid_id = []
+        reverse_vocab = self.get_id_to_token_vocab()
+
+        for key, item in reverse_vocab.items():
+            candidat = current_output + item
+
+            for name in valid_names:
+                if name.startswith(candidat):
+                    valid_id.append(key)
+                    break
+
+        return valid_id

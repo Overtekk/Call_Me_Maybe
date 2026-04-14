@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 14:54:05 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/14 16:25:58 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -62,6 +62,9 @@ class CallMeMaybe(BaseModel):
 
         if self.debug:
             print_log(f"-DEBUG-\nInstructions:\n{instructions}")
+
+        test = self._vocab.get_valid_token_ids("fn_a", ["fn_add_numbers"])
+        print(test)
 
 
     def get_function_name(self, prompt: str) -> str:
