@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 11:56:35 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 15:37:06 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -70,7 +70,7 @@ class CallMeMaybe(BaseModel):
 
         input_ids: list = self._model.encode(instructions)[0].tolist()
 
-        self.get_function_name(instructions)
+        self.generate_function_name(instructions)
 
         # while (True):
         #     probabilities: list[float] = self._model.get_logits_from_input_ids(input_ids + token_id)
@@ -82,12 +82,30 @@ class CallMeMaybe(BaseModel):
         #     if next_token_id in ["<|endoftext|>", "<|im_end|>"]:
         #         break
 
-    def get_function_name(self, prompt: str) -> None:
+    def generate_function_name(self, prompt: str) -> None:
         token_sequences: Dict[str, List[int]] = {}
 
+        # Get functions name to token
         for func in self.functions_definition_path:
             input_ids: list[int] = self._model.encode(func.name)[0].tolist()
             token_sequences[func.name] = input_ids
 
-        prompt_input_ids: list[int] = self._model.encode(prompt)[0].to_list()
+        # Get prompts token
+        prompt_input_ids: list[int] = self._model.encode(prompt)[0].tolist()
 
+        # Generation
+        current_ouput: str = ""
+        current_token: list[int] = []
+
+        while (True):
+
+            # Combined all tokens
+            all_token: list[int] = prompt_input_ids + current_token
+
+            # Get the logits token
+            logits: list[float] = self._model.get_logits_from_input_ids(all_token)
+
+            # Identifiate valid tokens
+            valid_tokens: set = set()
+            for func in self.functions_definition_path:
+                print(func.name)
