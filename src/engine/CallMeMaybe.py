@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 20:28:11 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 21:51:13 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -100,6 +100,7 @@ class CallMeMaybe(BaseModel):
             # Identifiate valid tokens
             valid_tokens: set = set()
             for func in self.functions_definition_path:
+
                 if func.name.startswith(current_ouput):
                     name_encoding = token_sequences[func.name]
                     next_position = len(current_token)
@@ -122,7 +123,7 @@ class CallMeMaybe(BaseModel):
             best_token_id: int = int(numpy.argmax(logits_masked))
             current_token.append(best_token_id)
 
-            # Convertir token in string
+            # Convert token in string
             token_string = dict_vocab.get(best_token_id, "")
             current_ouput += token_string
 
@@ -137,6 +138,6 @@ class CallMeMaybe(BaseModel):
                 break
 
         if self.debug:
-            print_log(f"[chartreuse4]Generated name: '{current_ouput}'[/chartreuse4]\n")
+            print_log(f"[green]Generated name: '{current_ouput}'[/green]\n")
 
         return current_ouput

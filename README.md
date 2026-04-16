@@ -24,8 +24,6 @@
 
 ## ✏️ Quick Start
 
-## ✏️ Quick Start
-
 ```bash
 make  # install all dependencies and run the script
 
