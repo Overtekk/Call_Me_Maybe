@@ -6,11 +6,11 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 16:25:58 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 11:56:35 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from typing import Any, List
+from typing import Any, Dict, List
 
 from pathlib import Path
 from llm_sdk import Small_LLM_Model
@@ -45,8 +45,10 @@ class CallMeMaybe(BaseModel):
             if self.debug or self.visualizer:
                 print_log("Initializing LLM...")
 
+            # Init the LLM Model
             self._model = Small_LLM_Model()
 
+            # Init the Vocabulary Class
             self._vocab = Vocabulary(
                 path_file=self._model.get_path_to_vocab_file(),
                 debug=self.debug
@@ -58,18 +60,34 @@ class CallMeMaybe(BaseModel):
         return super().model_post_init(context)
 
     def run(self, prompt: str) -> None:
-        instructions = get_instructions(self.functions_definition_path, prompt)
+        # Get the formatted instructions for the LLM
+        instructions: str = get_instructions(self.functions_definition_path, prompt)
 
         if self.debug:
             print_log(f"-DEBUG-\nInstructions:\n{instructions}")
 
-        test = self._vocab.get_valid_token_ids("fn_a", ["fn_add_numbers"])
-        print(test)
+        token_id: list[int] = []
 
+        input_ids: list = self._model.encode(instructions)[0].tolist()
 
-    def get_function_name(self, prompt: str) -> str:
-        current_output = ""
-        current_tokens: List[int] = []
+        self.get_function_name(instructions)
 
-        current_sequence = self._model.encode(prompt)
-        probabilities = self._model.get_logits_from_input_ids(current_sequence.tolist()[0])
+        # while (True):
+        #     probabilities: list[float] = self._model.get_logits_from_input_ids(input_ids + token_id)
+        #     next_token: float = max(probabilities)
+        #     next_token_id: int = probabilities.index(next_token)
+        #     token_id.append(next_token_id)
+        #     valid_token: str = self._model.decode([next_token_id])
+        #     print(valid_token, end="", flush=True)
+        #     if next_token_id in ["<|endoftext|>", "<|im_end|>"]:
+        #         break
+
+    def get_function_name(self, prompt: str) -> None:
+        token_sequences: Dict[str, List[int]] = {}
+
+        for func in self.functions_definition_path:
+            input_ids: list[int] = self._model.encode(func.name)[0].tolist()
+            token_sequences[func.name] = input_ids
+
+        prompt_input_ids: list[int] = self._model.encode(prompt)[0].to_list()
+
