@@ -6,11 +6,14 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 15:37:06 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 19:32:52 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
 from typing import Any, Dict, List
+from numpy.typing import NDArray
+
+import numpy
 
 from pathlib import Path
 from llm_sdk import Small_LLM_Model
@@ -63,14 +66,15 @@ class CallMeMaybe(BaseModel):
         # Get the formatted instructions for the LLM
         instructions: str = get_instructions(self.functions_definition_path, prompt)
 
+        dict_vocab: dict[int, str] = self._vocab.get_id_to_token_vocab()
+
         if self.debug:
             print_log(f"-DEBUG-\nInstructions:\n{instructions}")
 
         token_id: list[int] = []
-
         input_ids: list = self._model.encode(instructions)[0].tolist()
 
-        self.generate_function_name(instructions)
+        self.generate_function_name(instructions, dict_vocab)
 
         # while (True):
         #     probabilities: list[float] = self._model.get_logits_from_input_ids(input_ids + token_id)
@@ -82,7 +86,7 @@ class CallMeMaybe(BaseModel):
         #     if next_token_id in ["<|endoftext|>", "<|im_end|>"]:
         #         break
 
-    def generate_function_name(self, prompt: str) -> None:
+    def generate_function_name(self, prompt: str, dict_vocab: Dict[int, str]) -> None:
         token_sequences: Dict[str, List[int]] = {}
 
         # Get functions name to token
@@ -108,4 +112,30 @@ class CallMeMaybe(BaseModel):
             # Identifiate valid tokens
             valid_tokens: set = set()
             for func in self.functions_definition_path:
-                print(func.name)
+                if func.name.starswith(current_ouput):
+                    name_encoding = token_sequences
+                    next_position = len(current_token)
+                    if next_position < len(name_encoding):
+                        valid_tokens.add(name_encoding[next_position])
+
+            if not valid_tokens:
+                break
+
+            logits_masked: NDArray[Any] = numpy.full_like(logits, numpy.inf, dtype=float)
+            for token_id in valid_tokens:
+                logits_masked[token_id] = logits[token_id]
+
+            best_token_id: int = int(numpy.argmax(logits_masked))
+
+            current_token.append(best_token_id)
+
+            token_string = dict_vocab.get(best_token_id, "")
+            current_ouput += token_string
+
+            if not token_string:
+                break
+
+            if current_ouput in self.functions_definition_path.name:
+                break
+
+        print(current_ouput)

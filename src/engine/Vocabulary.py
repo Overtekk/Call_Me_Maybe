@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 09:07:23 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 19:12:04 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -32,10 +32,10 @@ class Vocabulary(BaseModel):
     _vocab_data: Dict = PrivateAttr()
 
     def model_post_init(self, context: Any) -> None:
-        self.load_vocab(self.path_file)
+        self._load_vocab(self.path_file)
         return super().model_post_init(context)
 
-    def load_vocab(self, path: str) -> None:
+    def _load_vocab(self, path: str) -> None:
         try:
             with open(path, 'r') as f:
                 vocab = json.load(f)
