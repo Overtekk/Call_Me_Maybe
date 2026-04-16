@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 15:08:01 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 20:17:26 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -25,7 +25,7 @@ def get_instructions(func_def: List[str], user_prompt: str) -> str:
     function_def_str = "Available functions:\n"
     for function in func_def:
         function_def_str += (
-            f"- {function.name}: {function.description}"
+            f"- {function.name}: {function.description}\n"
         )
 
     # Task model
@@ -42,8 +42,7 @@ def get_instructions(func_def: List[str], user_prompt: str) -> str:
 
     user_formated_prompt = f"User request: {user_prompt}"
 
-    begin_output = '{"name": "'
 
-    return (task + function_def_str + model + user_formated_prompt +
-            begin_output
-        )
+    return (
+        task + function_def_str + model + user_formated_prompt
+    )

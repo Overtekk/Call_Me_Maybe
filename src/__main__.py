@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 10:20:58 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/16 20:14:30 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -21,6 +21,7 @@ from src.engine import CallMeMaybe, Prompt
 
 def main() -> int:
     try:
+        # Verify that all data are correct
         args = argument_parser()
         check_llm_available()
 
@@ -48,12 +49,16 @@ def main() -> int:
             print_validated_data(validated_data['func_def'])
             print_validated_data(validated_data['func_call'])
 
+        # Init all needed objects
         ai = CallMeMaybe(
             functions_definition_path=validated_data['func_def'],
             output_file_path=args.output,
             visualizer=args.visualizer,
             debug=args.debug
         )
+
+        if args.debug:
+            print_rule("")
 
         prompter = Prompt(
             functions_calling=validated_data['func_call'],
@@ -64,6 +69,7 @@ def main() -> int:
         if args.debug:
             print_rule("")
 
+        # Generation process
         while True:
             prompt = prompter.get_next_prompt()
 
