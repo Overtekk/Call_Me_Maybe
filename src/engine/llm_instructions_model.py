@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 10:11:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:24:50 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -15,10 +15,10 @@ from typing import Any, List
 import json
 import random
 
-from src.parser.models.schemas import JsonFunctionCalling
+from src.parser.models.schemas import JsonFunctionDefinition
 
 
-def get_instructions(func_def: List[JsonFunctionCalling],
+def get_instructions(func_def: List[JsonFunctionDefinition],
                      user_prompt: str) -> str:
     # Instructions for the model
     task: str = ("Task: You are a function selector. Given a user request, "
