@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 09:18:14 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 09:19:59 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -75,7 +75,6 @@ class CallMeMaybe(BaseModel):
             print_log(f"-DEBUG-\nInstructions:\n\n'{instructions}'\n")
 
         self.generate_function_name(instructions, dict_vocab)
-
 
     def generate_function_name(self, prompt: str,
                                dict_vocab: Dict[int, str]) -> str:

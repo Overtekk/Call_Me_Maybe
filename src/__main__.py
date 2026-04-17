@@ -6,12 +6,17 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 20:14:30 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 09:59:36 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
+from typing import Any
+from argparse import Namespace
+
 import sys
 
+from src.parser.models.schemas import (JsonFunctionCalling,
+                                       JsonFunctionDefinition)
 from src.utils import print_error, print_log, print_rule, print_logo
 from src.debug import print_validated_data
 from src.parser import (argument_parser, validate_json_content,
@@ -22,15 +27,17 @@ from src.engine import CallMeMaybe, Prompt
 def main() -> int:
     try:
         # Verify that all data are correct
-        args = argument_parser()
+        args: Namespace = argument_parser()
         check_llm_available()
 
-        validation_map = {
+        validation_map: dict[str, Any] = {
             "func_call": args.func_call,
             "func_def": args.func_def
         }
 
-        validated_data = {}
+        validated_data: dict[str, list[JsonFunctionDefinition] |
+                             list[JsonFunctionCalling]] = {}
+
         for schema_type, path in validation_map.items():
             validated_data[schema_type] = validate_json_content(path,
                                                                 schema_type)
@@ -50,7 +57,7 @@ def main() -> int:
             print_validated_data(validated_data['func_call'])
 
         # Init all needed objects
-        ai = CallMeMaybe(
+        ai: CallMeMaybe = CallMeMaybe(
             functions_definition_path=validated_data['func_def'],
             output_file_path=args.output,
             visualizer=args.visualizer,
@@ -60,7 +67,7 @@ def main() -> int:
         if args.debug:
             print_rule("")
 
-        prompter = Prompt(
+        prompter: Prompt = Prompt(
             functions_calling=validated_data['func_call'],
             visualizer=args.visualizer,
             debug=args.debug
@@ -71,7 +78,7 @@ def main() -> int:
 
         # Generation process
         while True:
-            prompt = prompter.get_next_prompt()
+            prompt: str = prompter.get_next_prompt()
 
             if prompt == "empty":
                 if args.debug:

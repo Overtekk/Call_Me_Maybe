@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 22:14:11 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 09:21:09 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -51,10 +51,9 @@ def get_instructions(func_def: List[str], user_prompt: str) -> str:
     if not isinstance(user_prompt, str):
         raise ValueError("user prompt not a string.")
 
-    user_formated_prompt: str = (f"User request: {user_prompt}\n"
-                                 "The best matching function name is: "
-                        )
-
+    user_formated_prompt: str = (
+        f"User request: {user_prompt}\n The best matching function name is: "
+    )
 
     return (
         task + function_def_str + model + user_formated_prompt
