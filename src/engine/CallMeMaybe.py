@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 09:19:59 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:10:17 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -19,13 +19,14 @@ from pathlib import Path
 from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
+from src.parser.models.schemas import JsonFunctionCalling
 from src.utils import print_log, print_rule
 from src.engine.llm_instructions_model import get_instructions
 from src.engine.Vocabulary import Vocabulary
 
 
 class CallMeMaybe(BaseModel):
-    functions_definition_path: List = Field(
+    functions_definition_path: List[JsonFunctionCalling] = Field(
         description='Path where functions are stored (json files)'
     )
     output_file_path: Path = Field(
@@ -102,7 +103,7 @@ class CallMeMaybe(BaseModel):
             )
 
             # Identifiate valid tokens
-            valid_tokens: set = set()
+            valid_tokens: set[int] = set()
             for func in self.functions_definition_path:
 
                 if func.name.startswith(current_ouput):

@@ -6,17 +6,20 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 09:21:09 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:11:04 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from typing import List
+from typing import Any, List
 
 import json
 import random
 
+from src.parser.models.schemas import JsonFunctionCalling
 
-def get_instructions(func_def: List[str], user_prompt: str) -> str:
+
+def get_instructions(func_def: List[JsonFunctionCalling],
+                     user_prompt: str) -> str:
     # Instructions for the model
     task: str = ("Task: You are a function selector. Given a user request, "
                  "output the name of the best matching function.\n")
@@ -35,7 +38,7 @@ def get_instructions(func_def: List[str], user_prompt: str) -> str:
     example_func: list[str] = random.choice(func_def)
     example_param: str = list(example_func.parameters.keys())[0]
 
-    task_model_data: dict[str, str] = {
+    task_model_data: dict[str, Any] = {
         "prompt": f"Use {example_func.name}",
         "name": f"{example_func.name}",
         "parameters": {

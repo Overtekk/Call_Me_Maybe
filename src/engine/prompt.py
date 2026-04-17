@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 10:15:55 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:09:09 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -16,11 +16,12 @@ import json
 
 from pydantic import BaseModel, Field, PrivateAttr
 
+from src.parser.models.schemas import JsonFunctionCalling
 from src.utils import print_log
 
 
 class Prompt(BaseModel):
-    functions_calling: List = Field(
+    functions_calling: List[JsonFunctionCalling] = Field(
         description='Path where promps are stored (json files)'
     )
     visualizer: bool = Field(
@@ -32,7 +33,7 @@ class Prompt(BaseModel):
         default=False
     )
 
-    _list_prompts: List = PrivateAttr()
+    _list_prompts: List[str] = PrivateAttr()
 
     def model_post_init(self, _: Any) -> None:
         self._list_prompts: List[str] = []

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 19:12:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:09:49 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -29,7 +29,7 @@ class Vocabulary(BaseModel):
     )
 
     _vocab_path: str = PrivateAttr()
-    _vocab_data: Dict = PrivateAttr()
+    _vocab_data: Dict[str, int] = PrivateAttr()
 
     def model_post_init(self, context: Any) -> None:
         self._load_vocab(self.path_file)
