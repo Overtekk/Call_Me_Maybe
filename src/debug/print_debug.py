@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/02 14:02:40 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 09:58:03 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:23:13 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -14,8 +14,7 @@ Debug utilaty tool to show validated data. Only showed in the debug mode
 state.
 """
 
-from src.parser.models.schemas import (JsonFunctionCalling,
-                                       JsonFunctionDefinition)
+from src.models import JsonFunctionCalling, JsonFunctionDefinition
 
 
 def print_validated_data(data: list[JsonFunctionDefinition] |

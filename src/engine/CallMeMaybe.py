@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 12:34:46 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:36:45 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -19,10 +19,10 @@ from pathlib import Path
 from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
-from src.parser.models.schemas import JsonFunctionDefinition
 from src.utils import print_log, print_rule
 from src.engine.llm_instructions_model import get_instructions
 from src.engine.Vocabulary import Vocabulary
+from src.models import DataType, JsonFunctionDefinition
 
 
 class CallMeMaybe(BaseModel):
@@ -183,9 +183,19 @@ class CallMeMaybe(BaseModel):
         output_result: dict[Any, Any] = {}
 
         for param in func_param:
-            print(param)
+            output_generation: str = ""
+
+            if func_param[param].type == DataType.STRING:
+                output_result[param] = self.gen_type_str_param(
+                    prompt, output_generation, func_name, dict_vocab
+                )
+
 
         if self.debug:
-            print_log(f"[green]Generated name: '{output_result}'[/green]\n")
+            print_log(f"[green]Generated params: '{output_result}'[/green]\n")
 
         return output_result
+
+    def gen_type_str_param(self, prompt: str, output_generation: str,
+                      func_name: str, dict_vocab: Dict[int, str]) -> str:
+        pass

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 10:39:05 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:23:41 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -15,7 +15,7 @@ from typing import Any, List
 import json
 import random
 
-from src.parser.models.schemas import JsonFunctionDefinition
+from src.models import JsonFunctionDefinition
 
 
 def get_instructions(func_def: List[JsonFunctionDefinition],

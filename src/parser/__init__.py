@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:04:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/13 08:51:39 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:22:22 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -18,5 +18,5 @@ from src.parser.llm_path_checker import check_llm_available
 __all__ = [
     "argument_parser",
     "validate_json_content",
-    "check_llm_available"
+    "check_llm_available",
 ]

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 10:09:09 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:23:48 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -16,7 +16,7 @@ import json
 
 from pydantic import BaseModel, Field, PrivateAttr
 
-from src.parser.models.schemas import JsonFunctionCalling
+from src.models import JsonFunctionCalling
 from src.utils import print_log
 
 

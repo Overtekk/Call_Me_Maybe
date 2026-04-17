@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/29 16:03:32 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 17:01:41 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:24:01 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -26,8 +26,7 @@ import pathlib
 from pydantic import TypeAdapter, ValidationError
 from json import JSONDecodeError
 
-from src.parser.models.schemas import (JsonFunctionCalling,
-                                       JsonFunctionDefinition)
+from src.models import JsonFunctionCalling, JsonFunctionDefinition
 
 
 def validate_json_content(

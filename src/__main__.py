@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 10:46:03 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 13:23:35 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -15,12 +15,11 @@ from argparse import Namespace
 
 import sys
 
-from src.parser.models.schemas import (JsonFunctionCalling,
-                                       JsonFunctionDefinition)
 from src.utils import print_error, print_log, print_rule, print_logo
 from src.debug import print_validated_data
 from src.parser import (argument_parser, validate_json_content,
                         check_llm_available)
+from src.models import JsonFunctionCalling, JsonFunctionDefinition
 from src.engine import CallMeMaybe, Prompt
 
 
