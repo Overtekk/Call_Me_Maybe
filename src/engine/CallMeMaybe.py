@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/16 21:51:13 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 09:18:14 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -64,7 +64,9 @@ class CallMeMaybe(BaseModel):
 
     def run(self, prompt: str) -> None:
         # Get the formatted instructions for the LLM
-        instructions: str = get_instructions(self.functions_definition_path, prompt)
+        instructions: str = get_instructions(
+            self.functions_definition_path, prompt
+            )
 
         dict_vocab: dict[int, str] = self._vocab.get_id_to_token_vocab()
 
@@ -75,7 +77,8 @@ class CallMeMaybe(BaseModel):
         self.generate_function_name(instructions, dict_vocab)
 
 
-    def generate_function_name(self, prompt: str, dict_vocab: Dict[int, str]) -> str:
+    def generate_function_name(self, prompt: str,
+                               dict_vocab: Dict[int, str]) -> str:
         token_sequences: Dict[str, List[int]] = {}
 
         # Get functions name to token
@@ -95,7 +98,9 @@ class CallMeMaybe(BaseModel):
             all_token: list[int] = prompt_input_ids + current_token
 
             # Get the logits token
-            logits: list[float] = self._model.get_logits_from_input_ids(all_token)
+            logits: list[float] = self._model.get_logits_from_input_ids(
+                all_token
+            )
 
             # Identifiate valid tokens
             valid_tokens: set = set()
@@ -111,11 +116,15 @@ class CallMeMaybe(BaseModel):
             # Security if token is not valid
             if not valid_tokens:
                 if self.debug:
-                    print_log(f"[dark_red]Invalid token {valid_tokens}[/dark_red]\n")
+                    print_log(
+                        f"[dark_red]Invalid token {valid_tokens}[/dark_red]\n"
+                    )
                 break
 
             # Mask token we don't want
-            logits_masked: NDArray[Any] = numpy.full_like(logits, -numpy.inf, dtype=float)
+            logits_masked: NDArray[Any] = numpy.full_like(
+                logits, -numpy.inf, dtype=float
+            )
             for token_id in valid_tokens:
                 logits_masked[token_id] = logits[token_id]
 
@@ -134,7 +143,8 @@ class CallMeMaybe(BaseModel):
                 break
 
             # Stop the loop if the name have been found
-            if any(func.name == current_ouput for func in self.functions_definition_path):
+            if any(func.name == current_ouput
+                   for func in self.functions_definition_path):
                 break
 
         if self.debug:
