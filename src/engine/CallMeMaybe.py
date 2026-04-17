@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 10:25:48 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 12:34:46 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -43,6 +43,9 @@ class CallMeMaybe(BaseModel):
 
     _model: Small_LLM_Model = PrivateAttr()
     _vocab: Vocabulary = PrivateAttr()
+    _functions_def_dict: dict[str, JsonFunctionDefinition] = (
+        PrivateAttr(default_factory=dict)
+    )
 
     def model_post_init(self, context: Any) -> None:
         try:
@@ -57,6 +60,10 @@ class CallMeMaybe(BaseModel):
                 path_file=self._model.get_path_to_vocab_file(),
                 debug=self.debug
             )
+
+            # Convert the JSON object to a dict
+            for func in self.functions_definition_path:
+                self._functions_def_dict[func.name] = func
 
         except Exception as e:
             raise ValueError(f"error while initializing model: {e}")
@@ -75,7 +82,17 @@ class CallMeMaybe(BaseModel):
             print_rule("Generation Process")
             print_log(f"-DEBUG-\nInstructions:\n\n'{instructions}'\n")
 
-        self.generate_function_name(instructions, dict_vocab)
+        output_result: dict[Any, Any] = {}
+
+        # Function name
+        func_name: str = self.generate_function_name(instructions, dict_vocab)
+        output_result['name'] = func_name
+
+        # Function parameters
+        func_param: dict[Any, Any] = self.generate_function_param(
+            instructions, func_name, dict_vocab
+        )
+        output_result['parameters'] = func_param
 
     def generate_function_name(self, prompt: str,
                                dict_vocab: Dict[int, str]) -> str:
@@ -151,3 +168,24 @@ class CallMeMaybe(BaseModel):
             print_log(f"[green]Generated name: '{current_ouput}'[/green]\n")
 
         return current_ouput
+
+    def generate_function_param(self, prompt: str, func_name: str,
+                                dict_vocab: Dict[int, str]) -> Dict[Any, Any]:
+
+        func_obj = self._functions_def_dict.get(func_name)
+
+        if func_obj:
+            func_param: dict[str, Any] = func_obj.parameters
+        else:
+            return {}
+
+        # Generation
+        output_result: dict[Any, Any] = {}
+
+        for param in func_param:
+            print(param)
+
+        if self.debug:
+            print_log(f"[green]Generated name: '{output_result}'[/green]\n")
+
+        return output_result
