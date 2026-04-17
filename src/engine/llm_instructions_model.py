@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 10:24:50 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:39:05 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -35,7 +35,7 @@ def get_instructions(func_def: List[JsonFunctionDefinition],
         )
 
     # Model for the output
-    example_func: list[str] = random.choice(func_def)
+    example_func: JsonFunctionDefinition = random.choice(func_def)
     example_param: str = list(example_func.parameters.keys())[0]
 
     task_model_data: dict[str, Any] = {

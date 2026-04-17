@@ -6,11 +6,11 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 09:59:36 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/17 10:46:03 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from typing import Any
+from typing import Any, cast
 from argparse import Namespace
 
 import sys
@@ -58,7 +58,8 @@ def main() -> int:
 
         # Init all needed objects
         ai: CallMeMaybe = CallMeMaybe(
-            functions_definition_path=validated_data['func_def'],
+            functions_definition_path=cast(list[JsonFunctionDefinition],
+                                           validated_data['func_def']),
             output_file_path=args.output,
             visualizer=args.visualizer,
             debug=args.debug
@@ -68,7 +69,8 @@ def main() -> int:
             print_rule("")
 
         prompter: Prompt = Prompt(
-            functions_calling=validated_data['func_call'],
+            functions_calling=cast(list[JsonFunctionCalling],
+                                   validated_data['func_call']),
             visualizer=args.visualizer,
             debug=args.debug
         )
