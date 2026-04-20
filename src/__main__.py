@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 13:23:35 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/20 18:11:09 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -16,11 +16,11 @@ from argparse import Namespace
 import sys
 
 from src.utils import print_error, print_log, print_rule, print_logo
-from src.debug import print_validated_data
+from src.debug import debug_print_validated_data
 from src.parser import (argument_parser, validate_json_content,
                         check_llm_available)
 from src.models import JsonFunctionCalling, JsonFunctionDefinition
-from src.engine import CallMeMaybe, Prompt
+from src.engine import CallMeMaybe, Prompt, Output
 
 
 def main() -> int:
@@ -52,8 +52,8 @@ def main() -> int:
         if args.debug:
             print_rule("", "white")
             print("-DEBUG-")
-            print_validated_data(validated_data['func_def'])
-            print_validated_data(validated_data['func_call'])
+            debug_print_validated_data(validated_data['func_def'])
+            debug_print_validated_data(validated_data['func_call'])
 
         # Init all needed objects
         ai: CallMeMaybe = CallMeMaybe(
@@ -74,6 +74,12 @@ def main() -> int:
             debug=args.debug
         )
 
+        output: Output = Output(
+            output_file_path=args.output,
+            visualizer=args.visualizer,
+            debug=args.debug
+        )
+
         if args.debug:
             print_rule("")
 
@@ -86,7 +92,11 @@ def main() -> int:
                     print_log("-DEBUG-\nNo more prompt available.")
                 break
 
-            ai.run(prompt)
+            result: dict[Any, Any] = ai.run(prompt)
+            output.store_result(prompt, result)
+
+        # Write generated result in the output file
+        output.write_output()
 
         return 0
 

@@ -6,13 +6,16 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/02 14:02:17 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/02 14:04:59 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/20 16:06:56 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from src.debug.print_debug import print_validated_data
+from src.debug.print_debug import (
+    debug_print_validated_data, debug_print_generating_process
+)
 
 
 __all__ = [
-    "print_validated_data"
+    "debug_print_validated_data",
+    "debug_print_generating_process"
 ]

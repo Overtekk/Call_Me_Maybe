@@ -2,9 +2,11 @@
 __pycache__
 .mypy_cache
 
+# Python files
 .python-version
-data/output/
-/main.py
-
 .venv
+
+# Other
+data/output/
 moulinette/
+data_test/

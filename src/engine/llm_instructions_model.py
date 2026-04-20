@@ -6,9 +6,17 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 13:23:41 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/20 17:49:38 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
+"""
+LLM Prompt Generation Module.
+
+This module is responsible for constructing structured natural language prompts
+to guide the Large Language Model (LLM) during the function calling process.
+It formats the available functions and parameters to enforce constrained
+generation for both function name selection and parameter extraction.
+"""
 
 from typing import Any, List
 
@@ -20,13 +28,31 @@ from src.models import JsonFunctionDefinition
 
 def get_instructions(func_def: List[JsonFunctionDefinition],
                      user_prompt: str) -> str:
-    # Instructions for the model
+    """
+    Construct the prompt for function name selection.
+
+    Generates a structured prompt that presents the LLM with a specific task,
+    a list of available functions with their descriptions, a formatting model
+    (few-shot prompting), and the user's natural language request.
+
+    Args:
+        func_def (List[JsonFunctionDefinition]): A list of available function
+            definitions to include in the prompt.
+        user_prompt (str): The natural language request from the user.
+
+    Returns:
+        str: The fully formatted prompt ready to be processed by the LLM.
+
+    Raises:
+        ValueError: If func_def is not a list or user_prompt is not a string.
+    """
+    # Instruction for the model
     task: str = ("Task: You are a function selector. Given a user request, "
                  "output the name of the best matching function.\n")
 
     # List of all functions available
     if not isinstance(func_def, List):
-        raise ValueError("function_definition not a list.")
+        raise ValueError("function_definition is not a list.")
 
     function_def_str: str = "Available functions:\n"
     for function in func_def:
@@ -52,12 +78,59 @@ def get_instructions(func_def: List[JsonFunctionDefinition],
 
     # User prompt
     if not isinstance(user_prompt, str):
-        raise ValueError("user prompt not a string.")
+        raise ValueError("user prompt is not a string.")
 
     user_formated_prompt: str = (
-        f"User request: {user_prompt}\n The best matching function name is: "
+        f"User request: {user_prompt}.\nThe best matching function name is: "
     )
 
     return (
         task + function_def_str + model + user_formated_prompt
+    )
+
+
+def get_param_instructions(func_def: JsonFunctionDefinition,
+                           user_prompt: str) -> str:
+    """
+    Construct the prompt for function parameter extraction.
+
+    Generates a structured prompt to guide the LLM in extracting the correct
+    parameters for a specifically chosen function based on the user's request.
+    It explicitly formats the expected parameters and their types.
+
+    Args:
+        func_def (JsonFunctionDefinition): The definition of the selected
+            function, including its expected parameters.
+        user_prompt (str): The natural language request from the user.
+
+    Returns:
+        str: The fully formatted prompt instructing the LLM to generate
+        the function's parameters.
+
+    Raises:
+        ValueError: If func_def is not a JsonFunctionDefinition or user_prompt
+                    is not a string.
+    """
+    # Instruction for the model
+    task: str = ("Task: You are a function selector. Given a user request, "
+                 "output the best parameters for the given function. Keep it "
+                 "concise.\n")
+
+    if not isinstance(func_def, JsonFunctionDefinition):
+        raise ValueError("function_definition not a JsonFunctionDefinition.")
+
+    func_str: str = f"{func_def.name}:\n"
+
+    for func_param_name, type_info in func_def.parameters.items():
+        func_str += f"{func_param_name} ({type_info.type.value})\n"
+
+    if not isinstance(user_prompt, str):
+        raise ValueError("user prompt is not a string.")
+
+    user_formated_prompt: str = (
+        f"User request: {user_prompt}.\nEnd each parameter with an new line."
+    )
+
+    return (
+        task + func_str + user_formated_prompt
     )

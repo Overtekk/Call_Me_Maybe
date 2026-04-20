@@ -6,13 +6,18 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 13:23:48 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/20 18:41:24 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
+"""
+Prompt management module.
+
+This module is responsible for loading, formatting, and distributing the
+natural language prompts sequentially to the LLM engine. It extracts the
+raw strings from the parsed JSON schema models.
+"""
 
 from typing import Any, List
-
-import json
 
 from pydantic import BaseModel, Field, PrivateAttr
 
@@ -21,6 +26,16 @@ from src.utils import print_log
 
 
 class Prompt(BaseModel):
+    """
+    Manager for the user prompts queued for processing.
+
+    Attributes:
+        functions_calling (List[JsonFunctionCalling]): The list of parsed
+            prompt objects loaded from the input JSON file.
+        visualizer (bool): Flag to enable visualizer mode.
+        debug (bool): Flag to enable detailed debug logging.
+    """
+
     functions_calling: List[JsonFunctionCalling] = Field(
         description='Path where promps are stored (json files)'
     )
@@ -36,19 +51,35 @@ class Prompt(BaseModel):
     _list_prompts: List[str] = PrivateAttr()
 
     def model_post_init(self, _: Any) -> None:
-        self._list_prompts: List[str] = []
+        """Initialize the private list of prompts after model validation."""
 
+        self._list_prompts: List[str] = []
         self._format_prompt()
 
     def get_next_prompt(self) -> str:
+        """
+        Retrieve and remove the next prompt from the queue.
+
+        Returns:
+            str: The raw natural language prompt string. Returns "empty"
+            if the queue is depleted.
+        """
         if self._list_prompts:
             return self._list_prompts.pop(-1)
+
         else:
             return "empty"
 
     def _format_prompt(self) -> None:
+        """
+        Extract raw strings from the Pydantic models and populate the queue.
+
+        Iterates through the provided JsonFunctionCalling objects, extracts
+        the prompt strings, and stores them internally for sequential retrieval.
+        Logs the process if debug mode is active.
+        """
         for prompt in self.functions_calling:
-            formatted_prompt = json.dumps({"prompt": prompt.prompt})
+            formatted_prompt = prompt.prompt
 
             if self.debug:
                 print_log(f"-DEBUG-\nNew prompt added: {formatted_prompt}")

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/17 13:36:45 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/20 17:44:46 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -15,22 +15,20 @@ from numpy.typing import NDArray
 
 import numpy
 
-from pathlib import Path
 from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
-from src.utils import print_log, print_rule
-from src.engine.llm_instructions_model import get_instructions
+from src.utils import print_log
+from src.engine.llm_instructions_model import (get_instructions,
+                                               get_param_instructions)
 from src.engine.Vocabulary import Vocabulary
 from src.models import DataType, JsonFunctionDefinition
+from src.debug import debug_print_generating_process
 
 
 class CallMeMaybe(BaseModel):
     functions_definition_path: List[JsonFunctionDefinition] = Field(
         description='Path where functions are stored (json files)'
-    )
-    output_file_path: Path = Field(
-        description='Path where the output will be writted'
     )
     visualizer: bool = Field(
         description="The state of the visualizer",
@@ -70,29 +68,45 @@ class CallMeMaybe(BaseModel):
 
         return super().model_post_init(context)
 
-    def run(self, prompt: str) -> None:
-        # Get the formatted instructions for the LLM
-        instructions: str = get_instructions(
-            self.functions_definition_path, prompt
-            )
-
+    def run(self, prompt: str) -> dict[Any, Any]:
         dict_vocab: dict[int, str] = self._vocab.get_id_to_token_vocab()
-
-        if self.debug:
-            print_rule("Generation Process")
-            print_log(f"-DEBUG-\nInstructions:\n\n'{instructions}'\n")
-
         output_result: dict[Any, Any] = {}
 
         # Function name
-        func_name: str = self.generate_function_name(instructions, dict_vocab)
+        # Get the formatted instructions for the LLM
+        instructions_func_name: str = get_instructions(
+            self.functions_definition_path, prompt
+            )
+
+        # Show generation process for debug only
+        if self.debug:
+            debug_print_generating_process(instructions_func_name, 'Name')
+
+        # Generation
+        func_name: str = self.generate_function_name(
+            instructions_func_name, dict_vocab
+        )
         output_result['name'] = func_name
 
         # Function parameters
+        # Get the formatted instructions for the LLM
+        instructions_func_param: str = get_param_instructions(
+            self._functions_def_dict.get(func_name), prompt
+        )
+
+        # Show generation process for debug only
+        if self.debug:
+            debug_print_generating_process(
+                instructions_func_param, 'Parameters'
+            )
+
+        # Generation
         func_param: dict[Any, Any] = self.generate_function_param(
-            instructions, func_name, dict_vocab
+            instructions_func_param, func_name, dict_vocab
         )
         output_result['parameters'] = func_param
+
+        return output_result
 
     def generate_function_name(self, prompt: str,
                                dict_vocab: Dict[int, str]) -> str:
@@ -172,24 +186,29 @@ class CallMeMaybe(BaseModel):
     def generate_function_param(self, prompt: str, func_name: str,
                                 dict_vocab: Dict[int, str]) -> Dict[Any, Any]:
 
-        func_obj = self._functions_def_dict.get(func_name)
+        func_def: JsonFunctionDefinition = self._functions_def_dict.get(
+            func_name
+        )
 
-        if func_obj:
-            func_param: dict[str, Any] = func_obj.parameters
+        if func_def:
+            func_param: dict[str, Any] = func_def.parameters
         else:
             return {}
 
         # Generation
         output_result: dict[Any, Any] = {}
 
-        for param in func_param:
+        for param_name in func_param:
+            # Construct the output string for the LLM instructions
             output_generation: str = ""
+            for name_result in output_result.keys():
+                output_generation = output_generation + name_result + '='
+                output_generation += str(output_result[name_result]) + '\n'
 
-            if func_param[param].type == DataType.STRING:
-                output_result[param] = self.gen_type_str_param(
-                    prompt, output_generation, func_name, dict_vocab
+            if func_param[param_name].type == DataType.STRING:
+                output_result[param_name] = self.gen_type_str_param(
+                    prompt, output_generation, param_name, dict_vocab
                 )
-
 
         if self.debug:
             print_log(f"[green]Generated params: '{output_result}'[/green]\n")
@@ -197,5 +216,65 @@ class CallMeMaybe(BaseModel):
         return output_result
 
     def gen_type_str_param(self, prompt: str, output_generation: str,
-                      func_name: str, dict_vocab: Dict[int, str]) -> str:
-        pass
+                           func_param_name: str,
+                           dict_vocab: Dict[int, str]) -> str:
+
+        # Add the previous output_generation to the prompt and the func
+        # parameter name
+        new_prompt: str = (
+            prompt + f'{output_generation}\n' + f'{func_param_name}='
+        )
+
+        # Get prompts token
+        prompt_input_ids: list[int] = (
+            self._model.encode(new_prompt)[0].tolist()
+        )
+
+        # Generation
+        current_output: str = ""
+        current_tokens: list[int] = []
+        max_tokens: int = 100
+
+        while len(current_tokens) < max_tokens:
+            # Combined all tokens
+            all_token: list[int] = prompt_input_ids + current_tokens
+
+            # Get the logits token
+            logits: list[float] = self._model.get_logits_from_input_ids(
+                all_token
+            )
+
+            # Select best token
+            best_token_id: int = int(numpy.argmax(logits))
+            current_tokens.append(best_token_id)
+
+            # Convert token to string
+            token_string = dict_vocab.get(best_token_id, "")
+
+            # If token is empty, break the loop
+            if not token_string:
+                break
+
+            # Add the string to the current output
+            current_output += token_string
+
+            # If end a line detected, break the loop
+            if '\n' in current_output:
+                current_output = current_output.split('\n')[0]
+                break
+
+            # If '\u010a' (special character for '\n' used by the LLM), break
+            # the loop
+            if '\u010a' in current_output:
+                current_output = current_output.split('\u010a')[0]
+                break
+
+            # If multiples spaces detected, break the loop
+            if '  ' in current_output:
+                current_output = current_output.split('  ')[0]
+                break
+
+        # Clear the output from special characters generated by the LLM
+        clean_ouput: str = current_output.replace('\u0120', ' ')
+
+        return clean_ouput
