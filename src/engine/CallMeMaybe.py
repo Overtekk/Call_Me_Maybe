@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/20 17:44:46 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/21 10:56:26 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -210,6 +210,11 @@ class CallMeMaybe(BaseModel):
                     prompt, output_generation, param_name, dict_vocab
                 )
 
+            elif func_param[param_name].type == DataType.NUMBER:
+                output_result[param_name] = self.gen_type_number_param(
+                    prompt, output_generation, param_name, dict_vocab
+                )
+
         if self.debug:
             print_log(f"[green]Generated params: '{output_result}'[/green]\n")
 
@@ -218,16 +223,9 @@ class CallMeMaybe(BaseModel):
     def gen_type_str_param(self, prompt: str, output_generation: str,
                            func_param_name: str,
                            dict_vocab: Dict[int, str]) -> str:
-
-        # Add the previous output_generation to the prompt and the func
-        # parameter name
-        new_prompt: str = (
-            prompt + f'{output_generation}\n' + f'{func_param_name}='
-        )
-
         # Get prompts token
-        prompt_input_ids: list[int] = (
-            self._model.encode(new_prompt)[0].tolist()
+        prompt_input_ids: list[int] = self.get_prompt_input_ids(
+            prompt, output_generation, func_param_name
         )
 
         # Generation
@@ -249,7 +247,7 @@ class CallMeMaybe(BaseModel):
             current_tokens.append(best_token_id)
 
             # Convert token to string
-            token_string = dict_vocab.get(best_token_id, "")
+            token_string: str = dict_vocab.get(best_token_id, "")
 
             # If token is empty, break the loop
             if not token_string:
@@ -278,3 +276,123 @@ class CallMeMaybe(BaseModel):
         clean_ouput: str = current_output.replace('\u0120', ' ')
 
         return clean_ouput
+
+    def gen_type_number_param(self, prompt: str, output_generation: str,
+                              func_param_name: str,
+                              dict_vocab: Dict[int, str]) -> str:
+        # Get prompts token
+        prompt_input_ids: list[int] = self.get_prompt_input_ids(
+            prompt, output_generation, func_param_name
+        )
+
+        # Generation
+        current_output: str = ""
+        current_tokens: list[int] = []
+        max_tokens: int = 42
+        valid_set = set('-0123456789.\n')
+
+        # Create dictionnary that represent the valid characters
+        char_to_tokens: dict[str, list[int]] = {}
+        for char in valid_set:
+            char_tokens: list[int] = self._model.encode(char)[0].tolist()
+            char_to_tokens[char] = char_tokens
+
+        while len(current_tokens) < max_tokens:
+            # Combined all tokens
+            all_token: list[int] = prompt_input_ids + current_tokens
+
+            # Get the logits token
+            logits: list[float] = self._model.get_logits_from_input_ids(
+                all_token
+            )
+
+            # Identify valid tokens
+            valid_tokens: set = set()
+            for char in valid_set:
+                for token_id in char_to_tokens[char]:
+                    valid_tokens.add(token_id)
+
+            # If there are no valid tokens, break the loop
+            if not valid_tokens:
+                break
+
+            # Mask token we don't want
+            logits_masked: NDArray[Any] = numpy.full_like(
+                logits, -numpy.inf, dtype=float
+            )
+            for token_id in valid_tokens:
+                logits_masked[token_id] = logits[token_id]
+
+            # Select best token
+            best_token_id: int = int(numpy.argmax(logits_masked))
+            current_tokens.append(best_token_id)
+
+            # Convert token to string
+            token_string: str = dict_vocab.get(best_token_id, "")
+
+            # If token is empty, break the loop
+            if not token_string:
+                break
+
+            output_to_verify: str = current_output + token_string
+
+            # Validation rules
+            is_valid: bool = True
+
+            if output_to_verify.count('.') >= 2:
+                is_valid = False
+
+            elif output_to_verify.count('-') >= 2:
+                is_valid = False
+
+            elif output_to_verify.count('-') == 1 and output_to_verify[0] != '-':
+                is_valid = False
+
+            if not is_valid:
+                break
+
+            # Add the verified output to the true output
+            current_output = output_to_verify
+
+            # Verification: if the number if complete
+            try:
+                float(current_output)
+                if token_string not in ('0123456789.-'):
+                    break
+            except ValueError:
+                pass
+
+            # Verification: if '\n' is found, extract and return it
+            if '\n' in current_output:
+                current_output = current_output.split('\n')[0]
+                try:
+                    return float(current_output)
+                except ValueError:
+                    return None
+
+        # Clean the output
+        clean_output: str = ""
+        for char in current_output:
+            if char in ('-0123456789.'):
+                clean_output += char
+
+        try:
+            return float(clean_output)
+        except ValueError:
+            return None
+
+
+    def get_prompt_input_ids(self, prompt: str, output_generation: str,
+                             func_param_name: str) -> list[int]:
+        # Add the previous output_generation to the prompt and the func
+        # parameter name
+        new_prompt: str = (
+            prompt + f'{output_generation}\n' + f'{func_param_name}='
+        )
+
+        # Get prompts token
+        prompt_input_ids: list[int] = (
+            self._model.encode(new_prompt)[0].tolist()
+        )
+
+        return prompt_input_ids
