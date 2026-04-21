@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/21 10:56:26 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/21 13:20:04 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -289,13 +289,20 @@ class CallMeMaybe(BaseModel):
         current_output: str = ""
         current_tokens: list[int] = []
         max_tokens: int = 42
-        valid_set = set('-0123456789.\n')
+        autorised_char: set = set('-0123456789.\n')
 
-        # Create dictionnary that represent the valid characters
-        char_to_tokens: dict[str, list[int]] = {}
-        for char in valid_set:
-            char_tokens: list[int] = self._model.encode(char)[0].tolist()
-            char_to_tokens[char] = char_tokens
+        # Create a set to have all validate tokens from the dict_vocab
+        valid_tokens: set = set()
+        for token_id, token_str in dict_vocab.items():
+            # Clean the string to check more easily
+            clean_token_str = token_str.replace('Ġ', '').replace('Ċ', '\n')
+
+            if not clean_token_str:
+                continue
+
+            # Check if all char of the token are autorised
+            if all(char in autorised_char for char in clean_token_str):
+                valid_tokens.add(token_id)
 
         while len(current_tokens) < max_tokens:
             # Combined all tokens
@@ -305,16 +312,6 @@ class CallMeMaybe(BaseModel):
             logits: list[float] = self._model.get_logits_from_input_ids(
                 all_token
             )
-
-            # Identify valid tokens
-            valid_tokens: set = set()
-            for char in valid_set:
-                for token_id in char_to_tokens[char]:
-                    valid_tokens.add(token_id)
-
-            # If there are no valid tokens, break the loop
-            if not valid_tokens:
-                break
 
             # Mask token we don't want
             logits_masked: NDArray[Any] = numpy.full_like(
@@ -345,7 +342,8 @@ class CallMeMaybe(BaseModel):
             elif output_to_verify.count('-') >= 2:
                 is_valid = False
 
-            elif output_to_verify.count('-') == 1 and output_to_verify[0] != '-':
+            elif (output_to_verify.count('-') == 1 and
+                  output_to_verify[0] != '-'):
                 is_valid = False
 
             if not is_valid:

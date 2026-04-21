@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/20 17:49:38 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/21 13:25:53 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -113,8 +113,10 @@ def get_param_instructions(func_def: JsonFunctionDefinition,
     """
     # Instruction for the model
     task: str = ("Task: You are a function selector. Given a user request, "
-                 "output the best parameters for the given function. Keep it "
-                 "concise.\n")
+                 "extract the explicit values from the user request to "
+                 "populate the parameters. Do NOT solve the problem or "
+                 "calculate the answer. Only extract the arguments."
+    )
 
     if not isinstance(func_def, JsonFunctionDefinition):
         raise ValueError("function_definition not a JsonFunctionDefinition.")
