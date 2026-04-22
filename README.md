@@ -183,6 +183,8 @@ todo
 ### IA was use to:
 - **As a supervisor** ‒ this subject is a bit complexe and not very clear. I'm was lost after the parsing and didn't know what to do (even after searching on github). So I use IA to help me, explaim what I was supposed to do, how to do that. But I make sure that I understand and that it did not give code.
 - **Help writing docstrigs** ‒ ensure that the docstrings is clear and short. I writes something and give it to have a better writing style than me because docstrings is important.
+- **Help improving the prompt** - enhance my previous prompt to remove what was unclear, and go directly to the topic.
+- **Refactoring** - help to refactor my code and learn how to write better code.
 
 ---
 
