@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 09:46:37 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:42:24 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:44:23 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -29,8 +29,8 @@ from rich.errors import StyleSyntaxError
 from rich.style import Style
 
 
-standard_console = Console()
-error_console = Console(stderr=True)
+standard_console: Console = Console()
+error_console: Console = Console(stderr=True)
 
 
 def print_error(message: str) -> None:
@@ -40,8 +40,8 @@ def print_error(message: str) -> None:
     Args:
         message (str): The specific error description to be displayed.
     """
-    prefix = "Error: "
-    content = f"{message}"
+    prefix: str = "Error: "
+    content: str = f"{message}"
     error_console.print(f"[bold red]{prefix + content}[/bold red]")
 
 
@@ -76,12 +76,13 @@ def print_rule(message: str, color: str = "bold blue") -> None:
         message (str): The specific message to be displayed.
         color (str): The color used for the rule.
     """
-    style_rule = color
+    style_rule: str = color
 
     try:
         Style.parse(style_rule)
+
     except StyleSyntaxError:
-        style_rule = "bold blue"
+        style_rule: str = "bold blue"
         print_error(f"'{color}' is unkown. Switching to default (bold blue).")
 
     standard_console.rule(message, style=style_rule)
