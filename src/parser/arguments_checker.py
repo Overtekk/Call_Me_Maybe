@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:02:23 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:48:12 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 21:07:38 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -101,6 +101,15 @@ def argument_parser() -> argparse.Namespace:
         default="data/output/function_calling_results.json",
         metavar="file.json",
         type=validate_json_output
+    )
+
+    # Add model name
+    parser.add_argument(
+        "-m", "--model",
+        help=("name of the model you want to use.\n"
+              "(default: 'Qwen/Qwen3-0.6B')"),
+        default="Qwen/Qwen3-0.6B",
+        type=str
     )
 
     # Add visualizer argument

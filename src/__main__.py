@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 17:32:37 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 21:09:59 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -30,6 +30,7 @@ def main() -> int:
 
         # Init all needed objects
         ai: CallMeMaybe = CallMeMaybe(
+            model_name=args.model,
             functions_definition_path=cast(list[JsonFunctionDefinition],
                                            validated_data['func_def']),
             visualizer=args.visualizer,

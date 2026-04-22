@@ -134,6 +134,7 @@ If you want to use your own files, use those flags
  You can also use two other flags:
  - **-v (--visualizer)**: to show the visual progress of the LLM.
  - **-d (--debug)**: to show the debug mode.
+ - **-m (--model)**: to use another model (default is Qwen/Qwen3-0.6B)
 
  Usage:
  ```bash
@@ -142,7 +143,22 @@ If you want to use your own files, use those flags
 
 ---
 
-### Example of use:
+### 🖱️ Support for other models
+
+By using the flag **-m model_name** you can specify an other model from Hugging Face. Qwent is a low model langage so is performance are a bit bad. Other model are better trained so output can be different.
+
+Example of use:
+```bash
+ uv run python -m src -v -m HuggingFaceTB/SmolLM2-360M
+```
+or
+```bash
+ uv run python -m src -v -m Qwen/Qwen2.5-1.5B
+```
+
+---
+
+## ✍ Example of use:
 
 **Input Example**:
 

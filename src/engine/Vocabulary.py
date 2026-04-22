@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:59:26 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 22:25:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -119,8 +119,13 @@ class Vocabulary(BaseModel):
         """
         try:
             # Open the vocab file
-            with open(path, 'r') as f:
-                vocab = json.load(f)
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            if "model" in data and "vocab" in data["model"]:
+                vocab = data["model"]["vocab"]
+            else:
+                vocab = data
 
             if self.debug:
                 print_log(
