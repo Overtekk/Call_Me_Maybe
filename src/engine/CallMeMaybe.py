@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 22:43:30 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 22:57:25 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -262,7 +262,7 @@ class CallMeMaybe(BaseModel):
                 )
 
             if self.visualizer:
-                    print_vizualizer(f'\n{output_result[param_name]}\n')
+                print_vizualizer(f'\n{output_result[param_name]}\n')
 
         if self.debug:
             print_log(f"[green]Generated params: '{output_result}'[/green]\n")
