@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:27:44 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/14 16:22:09 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:57:04 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -17,6 +17,8 @@ the command line interface. It verifies the existence of input files, checks
 for JSON extensions, manages directory creation for output files, and strictly
 enforces read/write/execute permissions to ensure system stability.
 """
+
+from pathlib import Path
 
 import pathlib
 import os
@@ -43,12 +45,14 @@ def validate_json_input(path_str: str) -> pathlib.Path:
     Returns:
         pathlib.Path: The validated path object.
     """
-    path = pathlib.Path(path_str)
+    path: Path = pathlib.Path(path_str)
 
     if not is_file_exist(path):
         raise argparse.ArgumentTypeError(f"File '{path}' does not exist.")
+
     if not is_file_json(path):
         raise argparse.ArgumentTypeError(f"File '{path}' is not json.")
+
     if not os.access(path, os.R_OK):
         raise argparse.ArgumentTypeError(f"File '{path}' can't be read. Check "
                                          "your permissions.")
@@ -76,16 +80,18 @@ def validate_json_output(path_str: str) -> pathlib.Path:
     Returns:
         pathlib.Path: The validated and prepared path object.
     """
-    path = pathlib.Path(path_str)
+    path: Path = pathlib.Path(path_str)
 
     if path.suffix != ".json":
         raise argparse.ArgumentTypeError(f"File '{path}' is not json.")
 
-    folder_parent = path.parent
+    # Match 'input' folder
+    folder_parent: Path = path.parent
 
     if not is_folder_exist(folder_parent):
         folder_parent.mkdir(parents=True, exist_ok=True)
 
+    # Match 'data' folder
     if (not os.access(folder_parent.parent, os.W_OK | os.X_OK)
             or not os.access(folder_parent, os.W_OK | os.X_OK)):
         raise argparse.ArgumentTypeError("Write permission denied for "

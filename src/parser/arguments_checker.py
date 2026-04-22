@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 14:02:23 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/31 17:09:25 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:48:12 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -19,6 +19,7 @@ logic begins.
 """
 
 from typing import NoReturn
+from argparse import Namespace
 
 import argparse
 import sys
@@ -58,7 +59,8 @@ def argument_parser() -> argparse.Namespace:
         argparse.Namespace: An object containing the validated command-line
                             arguments.
     """
-    parser = RichArgumentParser(
+    # Create the parser object
+    parser: RichArgumentParser = RichArgumentParser(
         prog="Call Me Maybe",
         description=("Function calling tool that translates natural "
                      "language prompts into structured function calls"),
@@ -68,6 +70,8 @@ def argument_parser() -> argparse.Namespace:
         epilog=" ",
         formatter_class=argparse.RawTextHelpFormatter
     )
+
+    # Add function definition argument (store functions definition)
     parser.add_argument(
         "-f", "--functions_definition",
         help=("path where function definition in json is stored.\n"
@@ -77,6 +81,8 @@ def argument_parser() -> argparse.Namespace:
         dest="func_def",
         type=validate_json_input
     )
+
+    # Add function calling argument (store function calling)
     parser.add_argument(
         "-i", "--input",
         help=("path where input file in json is stored.\n"
@@ -86,6 +92,8 @@ def argument_parser() -> argparse.Namespace:
         dest="func_call",
         type=validate_json_input
     )
+
+    # Add output file argument
     parser.add_argument(
         "-o", "--output",
         help=("path to the output file in json.\n"
@@ -94,12 +102,16 @@ def argument_parser() -> argparse.Namespace:
         metavar="file.json",
         type=validate_json_output
     )
+
+    # Add visualizer argument
     parser.add_argument(
         "-v", "--visualizer",
         help="launch with the visualizer\n\n",
         required=False,
         action="store_true"
     )
+
+    # Add debug argument
     parser.add_argument(
         "-d", "--debug",
         help="launch with the debug mode",
@@ -107,5 +119,7 @@ def argument_parser() -> argparse.Namespace:
         action="store_true"
     )
 
-    args = parser.parse_args()
+    # Store all arguments
+    args: Namespace = parser.parse_args()
+
     return args

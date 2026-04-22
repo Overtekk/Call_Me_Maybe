@@ -6,9 +6,17 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/22 10:25:17 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:28:21 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:55:17 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
+"""
+Main parsing and validation orchestrator.
+
+This module consolidates the command-line argument parsing, environment
+verification, and JSON data validation into a single workflow. It ensures
+all inputs are strictly compliant with the project's requirements before
+the function calling logic begins.
+"""
 
 from typing import Any, Tuple
 from argparse import Namespace
@@ -23,6 +31,26 @@ from src.parser import (argument_parser, validate_json_content,
 @func_timer
 def parse() -> Tuple[Namespace, dict[str, list[JsonFunctionDefinition] |
                                      list[JsonFunctionCalling]]]:
+    """
+    Execute the complete input parsing and validation pipeline.
+
+    This function coordinates several critical steps:
+    1. Parses CLI arguments to determine file paths and flags.
+    2. Verifies the presence of the LLM SDK and model files.
+    3. Validates the structure of the function definitions and prompt tests
+       against their respective Pydantic schemas.
+    4. Logs validation results and provides debug visualization if requested.
+
+    Returns:
+        Tuple[Namespace, dict]: A tuple containing:
+            - The parsed Namespace with execution configurations.
+            - A dictionary containing lists of validated
+              JsonFunctionDefinition and JsonFunctionCalling models.
+
+    Note:
+        This function is decorated with @func_timer to monitor the
+        total time spent on environment and data preparation.
+    """
     args: Namespace = argument_parser()
     check_llm_available()
 
