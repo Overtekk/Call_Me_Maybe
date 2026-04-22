@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 11:00:20 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 12:35:00 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -86,3 +86,6 @@ class Prompt(BaseModel):
                 print_log(f"-DEBUG-\nNew prompt added: {formatted_prompt}")
 
             self._list_prompts.append(formatted_prompt)
+
+        # Reverse the order
+        self._list_prompts.reverse()
