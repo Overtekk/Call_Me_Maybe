@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/20 17:28:32 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/20 18:32:28 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:10:29 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -51,7 +51,7 @@ class Output(BaseModel):
         default=False
     )
 
-    _result_data: list[dict[Any, Any]] = PrivateAttr(default_factory=dict)
+    _result_data: list[dict[Any, Any]] = PrivateAttr(default_factory=list)
 
     def model_post_init(self, context: Any) -> None:
         """Initialize the private internal storage after model validation."""

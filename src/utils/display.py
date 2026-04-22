@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 09:46:37 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:44:23 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:01:07 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -82,7 +82,7 @@ def print_rule(message: str, color: str = "bold blue") -> None:
         Style.parse(style_rule)
 
     except StyleSyntaxError:
-        style_rule: str = "bold blue"
+        style_rule = "bold blue"
         print_error(f"'{color}' is unkown. Switching to default (bold blue).")
 
     standard_console.rule(message, style=style_rule)

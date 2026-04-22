@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/20 18:40:19 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:59:26 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -14,7 +14,7 @@ Vocabulary management module.
 
 This module is responsible for loading the LLM's vocabulary map and providing
 utility functions for constrained decoding. It handles the translation between
-string tokens and their corresponding integer IDs used by the model's tokenizer.
+string tokens and their corresponding integer IDs used by the model's tokenizer
 """
 
 from typing import Any, Dict, List

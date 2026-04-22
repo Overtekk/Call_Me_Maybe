@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/20 18:41:24 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:00:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -75,7 +75,8 @@ class Prompt(BaseModel):
         Extract raw strings from the Pydantic models and populate the queue.
 
         Iterates through the provided JsonFunctionCalling objects, extracts
-        the prompt strings, and stores them internally for sequential retrieval.
+        the prompt strings, and stores them internally for sequential
+        retrieval.
         Logs the process if debug mode is active.
         """
         for prompt in self.functions_calling:

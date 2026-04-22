@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/21 13:20:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:23:47 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -90,8 +90,17 @@ class CallMeMaybe(BaseModel):
 
         # Function parameters
         # Get the formatted instructions for the LLM
+        func_def: JsonFunctionDefinition | None = (
+            self._functions_def_dict.get(func_name)
+        )
+
+        if func_def is None:
+            raise ValueError(
+                f"Function definition for '{func_name}' not found."
+            )
+
         instructions_func_param: str = get_param_instructions(
-            self._functions_def_dict.get(func_name), prompt
+            func_def, prompt
         )
 
         # Show generation process for debug only
@@ -186,7 +195,7 @@ class CallMeMaybe(BaseModel):
     def generate_function_param(self, prompt: str, func_name: str,
                                 dict_vocab: Dict[int, str]) -> Dict[Any, Any]:
 
-        func_def: JsonFunctionDefinition = self._functions_def_dict.get(
+        func_def = self._functions_def_dict.get(
             func_name
         )
 
@@ -279,7 +288,7 @@ class CallMeMaybe(BaseModel):
 
     def gen_type_number_param(self, prompt: str, output_generation: str,
                               func_param_name: str,
-                              dict_vocab: Dict[int, str]) -> str:
+                              dict_vocab: Dict[int, str]) -> float | None:
         # Get prompts token
         prompt_input_ids: list[int] = self.get_prompt_input_ids(
             prompt, output_generation, func_param_name
@@ -289,10 +298,10 @@ class CallMeMaybe(BaseModel):
         current_output: str = ""
         current_tokens: list[int] = []
         max_tokens: int = 42
-        autorised_char: set = set('-0123456789.\n')
+        autorised_char: set[str] = set('-0123456789.\n')
 
         # Create a set to have all validate tokens from the dict_vocab
-        valid_tokens: set = set()
+        valid_tokens: set[int] = set()
         for token_id, token_str in dict_vocab.items():
             # Clean the string to check more easily
             clean_token_str = token_str.replace('Ġ', '').replace('Ċ', '\n')
@@ -378,7 +387,6 @@ class CallMeMaybe(BaseModel):
             return float(clean_output)
         except ValueError:
             return None
-
 
     def get_prompt_input_ids(self, prompt: str, output_generation: str,
                              func_param_name: str) -> list[int]:

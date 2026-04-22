@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 08:50:14 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:50:05 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:09:16 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -61,10 +61,10 @@ def check_llm_available() -> None:
 
     # Check Model
     for file_path in qwen_model_path.values():
-        path: Path = pathlib.Path(file_path)
+        model_path: Path = pathlib.Path(file_path)
 
-        if not is_file_exist(path):
-            raise ValueError(f"Missing '{path}' from llm_sdk.")
+        if not is_file_exist(model_path):
+            raise ValueError(f"Missing '{model_path}' from llm_sdk.")
 
-        if not os.access(path, os.R_OK):
-            raise ValueError(f"Can't read '{path}' from llm_sdk.")
+        if not os.access(model_path, os.R_OK):
+            raise ValueError(f"Can't read '{model_path}' from llm_sdk.")

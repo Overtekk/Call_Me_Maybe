@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/02 14:02:40 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/20 16:49:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:58:57 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -19,7 +19,7 @@ from src.utils import print_log, print_rule
 
 
 def debug_print_validated_data(data: list[JsonFunctionDefinition] |
-                         list[JsonFunctionCalling]) -> None:
+                               list[JsonFunctionCalling]) -> None:
     """Print all validated data to the standard stdout.
 
     Args:

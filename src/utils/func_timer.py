@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/21 13:32:36 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:36:12 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:18:22 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -16,7 +16,7 @@ This module provides decorators and tools to measure and log
 the execution time of specific functions or methods within the tool.
 """
 
-from typing import Any
+from typing import Any, Callable
 
 from functools import wraps
 from time import perf_counter
@@ -24,7 +24,7 @@ from time import perf_counter
 from src.utils import print_log
 
 
-def func_timer(f):
+def func_timer(f: Callable[..., Any]) -> Callable[..., Any]:
     """
     Decorator to measure and log the execution time of a function.
 
@@ -40,7 +40,7 @@ def func_timer(f):
         function and returns its unmodified result.
     """
     @wraps(f)
-    def wrap(*args, **kwargs):
+    def wrap(*args: Any, **kwargs: Any) -> Any:
         time_start: float = perf_counter()
         func_result: Any = f(*args, **kwargs)
         time_end: float = perf_counter()

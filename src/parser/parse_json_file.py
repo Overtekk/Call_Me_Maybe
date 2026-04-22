@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/29 16:03:32 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 10:53:19 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 11:06:26 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -67,13 +67,18 @@ def validate_json_content(
         if schema_type == "func_call":
             # TypeAdapter allows validation of top-level lists (JSON arrays)
             # which standard Pydantic models cannot do directly
-            adapter: TypeAdapter = TypeAdapter(List[JsonFunctionCalling])
-            return adapter.validate_python(data)
+            call_adapter: TypeAdapter[List[JsonFunctionCalling]] = (
+                TypeAdapter(List[JsonFunctionCalling])
+            )
+            return call_adapter.validate_python(data)
 
         elif schema_type == "func_def":
-            # Ensure the function definitions follow the mandatory schema structure
-            adapter: TypeAdapter = TypeAdapter(List[JsonFunctionDefinition])
-            return adapter.validate_python(data)
+            # Ensure the function definitions follow the mandatory schema
+            # structure
+            def_adapter: TypeAdapter[List[JsonFunctionDefinition]] = (
+                TypeAdapter(List[JsonFunctionDefinition])
+            )
+            return def_adapter.validate_python(data)
 
         else:
             raise ValueError(f"Unknown schema type: {schema_type}")
