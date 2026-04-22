@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 11:00:03 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 14:55:53 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -46,13 +46,16 @@ def get_instructions(func_def: List[JsonFunctionDefinition],
     Raises:
         ValueError: If func_def is not a list or user_prompt is not a string.
     """
+    if not isinstance(func_def, List):
+        raise ValueError("function_definition is not a list.")
+    if not isinstance(user_prompt, str):
+        raise ValueError("user prompt is not a string.")
+
     # Instruction for the model
     task: str = ("Task: You are a function selector. Given a user request, "
                  "output the name of the best matching function.\n")
 
     # List of all functions available
-    if not isinstance(func_def, List):
-        raise ValueError("function_definition is not a list.")
 
     function_def_str: str = "Available functions:\n"
     for function in func_def:
@@ -77,8 +80,6 @@ def get_instructions(func_def: List[JsonFunctionDefinition],
     model: str = f"Task Model:\n{formatted_json}\n"
 
     # User prompt
-    if not isinstance(user_prompt, str):
-        raise ValueError("user prompt is not a string.")
 
     user_formated_prompt: str = (
         f"User request: {user_prompt}.\nThe best matching function name is: "
@@ -111,6 +112,11 @@ def get_param_instructions(func_def: JsonFunctionDefinition,
         ValueError: If func_def is not a JsonFunctionDefinition or user_prompt
                     is not a string.
     """
+    if not isinstance(func_def, JsonFunctionDefinition):
+        raise ValueError("function_definition not a JsonFunctionDefinition.")
+    if not isinstance(user_prompt, str):
+        raise ValueError("user prompt is not a string.")
+
     # Instruction for the model
     task: str = (
         "Task: You are a function selector. Given a user request, "
@@ -119,16 +125,10 @@ def get_param_instructions(func_def: JsonFunctionDefinition,
         "calculate the answer. Only extract the arguments."
     )
 
-    if not isinstance(func_def, JsonFunctionDefinition):
-        raise ValueError("function_definition not a JsonFunctionDefinition.")
-
     func_str: str = f"{func_def.name}:\n"
 
     for func_param_name, type_info in func_def.parameters.items():
         func_str += f"{func_param_name} ({type_info.type.value})\n"
-
-    if not isinstance(user_prompt, str):
-        raise ValueError("user prompt is not a string.")
 
     user_formated_prompt: str = (
         f"User request: {user_prompt}.\nEnd each parameter with an new line."
