@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 14:02:20 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 17:31:24 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -18,7 +18,7 @@ import numpy
 from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
-from src.utils import print_log
+from src.utils import print_log, print_vizualizer, print_rule
 from src.engine.llm_instructions_model import (get_instructions,
                                                get_param_instructions)
 from src.engine.Vocabulary import Vocabulary
@@ -63,6 +63,9 @@ class CallMeMaybe(BaseModel):
             for func in self.functions_definition_path:
                 self._functions_def_dict[func.name] = func
 
+            if self.visualizer:
+                print_log("LLM loaded! Starting generation...\n")
+
         except Exception as e:
             raise ValueError(f"error while initializing model: {e}")
 
@@ -82,6 +85,15 @@ class CallMeMaybe(BaseModel):
         if self.debug:
             debug_print_generating_process(instructions_func_name, 'Name')
 
+        if self.visualizer:
+            print_log(
+                "User prompt request: "
+                "[light_blue]"
+                f"{prompt}\n\n"
+                "[/light_blue]"
+                "Generating function name...\n"
+            )
+
         # Generation
         func_name: str = self.generate_function_name(
             instructions_func_name, dict_vocab
@@ -97,6 +109,11 @@ class CallMeMaybe(BaseModel):
         if func_def is None:
             raise ValueError(
                 f"Function definition for '{func_name}' not found."
+            )
+
+        if self.visualizer:
+            print_log(
+                "Generating function parameters...\n"
             )
 
         instructions_func_param: str = get_param_instructions(
@@ -115,6 +132,10 @@ class CallMeMaybe(BaseModel):
         )
         output_result['parameters'] = func_param
 
+        if self.visualizer:
+            print_log("✅ Generation finished.")
+            print_rule("")
+
         return output_result
 
     def generate_function_name(self, prompt: str,
@@ -130,7 +151,7 @@ class CallMeMaybe(BaseModel):
         prompt_input_ids: list[int] = self._model.encode(prompt)[0].tolist()
 
         # Generation
-        current_ouput: str = ""
+        current_output: str = ""
         current_token: list[int] = []
 
         while (True):
@@ -146,7 +167,7 @@ class CallMeMaybe(BaseModel):
             valid_tokens: set[int] = set()
             for func in self.functions_definition_path:
 
-                if func.name.startswith(current_ouput):
+                if func.name.startswith(current_output):
                     name_encoding = token_sequences[func.name]
                     next_position = len(current_token)
 
@@ -174,7 +195,10 @@ class CallMeMaybe(BaseModel):
 
             # Convert token in string
             token_string = dict_vocab.get(best_token_id, "")
-            current_ouput += token_string
+            current_output += token_string
+
+            if self.visualizer:
+                print_vizualizer(f'\r{current_output}')
 
             # Avoid infinite loop if token is empty
             if not token_string:
@@ -183,14 +207,19 @@ class CallMeMaybe(BaseModel):
                 break
 
             # Stop the loop if the name have been found
-            if any(func.name == current_ouput
+            if any(func.name == current_output
                    for func in self.functions_definition_path):
                 break
 
         if self.debug:
-            print_log(f"[green]Generated name: '{current_ouput}'[/green]\n")
+            print_log(f"[green]Generated name: '{current_output}'[/green]\n")
 
-        return current_ouput
+        if self.visualizer:
+            print_log(
+                f"\nGenerated name: {current_output}.\n"
+            )
+
+        return current_output
 
     def generate_function_param(self, prompt: str, func_name: str,
                                 dict_vocab: Dict[int, str]) -> Dict[Any, Any]:
@@ -224,8 +253,14 @@ class CallMeMaybe(BaseModel):
                     prompt, output_generation, param_name, dict_vocab
                 )
 
+            if self.visualizer:
+                    print_vizualizer(f'\n{output_result[param_name]}\n')
+
         if self.debug:
             print_log(f"[green]Generated params: '{output_result}'[/green]\n")
+
+        if self.visualizer:
+            print_log(f"Generated parameters: {output_result}\n")
 
         return output_result
 
@@ -264,6 +299,9 @@ class CallMeMaybe(BaseModel):
 
             # Add the string to the current output
             current_output += token_string
+
+            if self.visualizer:
+                print_vizualizer(f'\r{current_output}')
 
             # If end a line detected, break the loop
             if '\n' in current_output:
@@ -366,6 +404,9 @@ class CallMeMaybe(BaseModel):
 
             # Add the verified output to the true output
             current_output = output_to_verify
+
+            if self.visualizer:
+                print_vizualizer(f'\r{current_output}')
 
             # Verification: if the number if complete
             try:

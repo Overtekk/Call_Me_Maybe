@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 11:14:55 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 17:32:37 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -17,7 +17,7 @@ import sys
 
 from src.generate import generate_answer
 from src.parser import parse
-from src.utils import print_error, print_rule
+from src.utils import print_error, print_rule, print_log
 from src.models import JsonFunctionCalling, JsonFunctionDefinition
 from src.engine import CallMeMaybe, Prompt, Output
 
@@ -60,6 +60,8 @@ def main() -> int:
 
         # Write generated result in the output file
         output.write_output()
+
+        print_log("\nGeneration completed. Thanks for you patience!\n")
 
         return 0
 

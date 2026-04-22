@@ -6,11 +6,12 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 10:28:03 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/21 13:35:52 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 17:06:36 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
-from src.utils.display import print_error, print_success, print_rule, print_log
+from src.utils.display import (print_error, print_success, print_rule,
+                               print_log, print_vizualizer)
 from src.utils.files import is_file_exist, is_folder_exist, is_file_json
 from src.utils.logo import print_logo
 from src.utils.func_timer import func_timer
@@ -25,5 +26,6 @@ __all__ = [
     "is_folder_exist",
     "is_file_json",
     "print_logo",
-    "func_timer"
+    "func_timer",
+    "print_vizualizer"
 ]
