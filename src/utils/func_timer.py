@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/21 13:32:36 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/21 13:56:23 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:36:12 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -15,6 +15,8 @@ Performance profiling utilities.
 This module provides decorators and tools to measure and log
 the execution time of specific functions or methods within the tool.
 """
+
+from typing import Any
 
 from functools import wraps
 from time import perf_counter
@@ -39,12 +41,16 @@ def func_timer(f):
     """
     @wraps(f)
     def wrap(*args, **kwargs):
-        time_start = perf_counter()
-        func_result = f(*args, **kwargs)
-        time_end = perf_counter()
+        time_start: float = perf_counter()
+        func_result: Any = f(*args, **kwargs)
+        time_end: float = perf_counter()
 
-        execution_time = time_end - time_start
-        print_log(f"\nAction took {execution_time:.4f} seconds.\n")
+        execution_time: float = time_end - time_start
+        minutes, seconds = divmod(execution_time, 60)
+
+        print_log(
+            f"\nAction took {int(minutes)} minutes, {seconds:.2f} seconds.\n"
+        )
 
         return func_result
     return wrap

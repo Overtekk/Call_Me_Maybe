@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:39:56 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/21 13:52:04 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/22 10:30:12 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -15,11 +15,9 @@ from argparse import Namespace
 
 import sys
 
-from src.utils import (print_error, print_log, print_rule, print_logo,
-                       func_timer)
-from src.debug import debug_print_validated_data
-from src.parser import (argument_parser, validate_json_content,
-                        check_llm_available)
+from src.generate import generate_answer
+from src.parser import parse
+from src.utils import print_error, print_rule
 from src.models import JsonFunctionCalling, JsonFunctionDefinition
 from src.engine import CallMeMaybe, Prompt, Output
 
@@ -72,58 +70,6 @@ def main() -> int:
     except Exception as e:
         print_error(f"Critical error: {e}")
         return 1
-
-@func_timer
-def parse() -> Tuple[Namespace, dict[str, list[JsonFunctionDefinition] |
-                                     list[JsonFunctionCalling]]]:
-    args: Namespace = argument_parser()
-    check_llm_available()
-
-    validation_map: dict[str, Any] = {
-        "func_call": args.func_call,
-        "func_def": args.func_def
-    }
-
-    validated_data: dict[str, list[JsonFunctionDefinition] |
-                         list[JsonFunctionCalling]] = {}
-
-    for schema_type, path in validation_map.items():
-        validated_data[schema_type] = validate_json_content(path,
-                                                            schema_type)
-
-    print_logo()
-    print_rule("")
-    print_log(
-        f"Successfully validated {len(validated_data['func_def'])} function "
-        "definitions."
-    )
-    print_log(
-        f"Successfully validated {len(validated_data['func_call'])} function "
-        "calling."
-    )
-
-    if args.debug:
-        print_rule("", "white")
-        print("-DEBUG-")
-        debug_print_validated_data(validated_data['func_def'])
-        debug_print_validated_data(validated_data['func_call'])
-
-    return (args, validated_data)
-
-
-@func_timer
-def generate_answer(ai: CallMeMaybe, prompter: Prompt, args: Namespace,
-                    output: Output) -> None:
-    while True:
-        prompt: str = prompter.get_next_prompt()
-
-        if prompt == "empty":
-            if args.debug:
-                print_log("-DEBUG-\nNo more prompt available.")
-            break
-
-        result: dict[Any, Any] = ai.run(prompt)
-        output.store_result(prompt, result)
 
 
 if __name__ == "__main__":
