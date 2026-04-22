@@ -27,7 +27,9 @@
 ```bash
 make  # install all dependencies and run the script
 
-make run  # alternatively you can also use this
+uv sync  # alternatively you can also use this
+
+uv run python -m src  # Launch with the default value
 ```
 > [!NOTE]
 > If you don't have `uv` installed, run `make install`
@@ -111,18 +113,55 @@ This project must have a Makefile and the following rules:
 git clone https://github.com/Overtekk/Call_me_Maybe.git
 ```
 
-### 2. Run:
+### 2. Install dependencies:
 ```bash
 make  # install all dependencies and run the script
 
-make run  # alternatively you can also use this
+uv sync  # alternatively you can also use this
 ```
 > [!NOTE]
 > If you don't have `uv` installed, run `make install`
 
+Using `uv run python -m src` (or `make run`) you will launch the program using the default argument.\
+If you want to use your own files, use those flags
+
+| FLAGS | DEFINITION |
+|:-----:|:--------------:|
+| -f / --functions_definition | path where function definition in json is stored |
+-i / --input |  path where input file in json is stored |
+ -o / --output |  path to the output file in json |
+
+ You can also use two other flags:
+ - **-v (--visualizer)**: to show the visual progress of the LLM.
+ - **-d (--debug)**: to show the debug mode.
+
+ Usage:
+ ```bash
+ usage: python -m src [--functions_definition <function_definition_file>] [--input <input_file> [--output <output_file>]
+ ```
+
+---
+
 ### Example of use:
 
-todo
+**Input Example**:
+
+```json
+  {
+    "prompt": "What is the square root of 16?"
+  }
+```
+
+**Output Example**:
+```json
+  {
+    "prompt": "What is the square root of 16?",
+    "name": "fn_get_square_root",
+    "parameters": {
+      "a": 16.0
+    }
+  }
+```
 
 ---
 
@@ -130,23 +169,51 @@ todo
 
 ### Algorithm:
 
-todo
+The core of this project relies on **Constrained Decoding** to force the LLM to output valid data. Instead of letting the model freely predict the next word, we intercept its "thought process" (the logits) at every single token:
+
+1. Prompt Encoding: The user prompt and instructions are converted into token IDs.
+
+2. Logit Calculation: The model evaluates the probability (logits) of all possible next tokens in its vocabulary.
+
+3. Masking: We apply a mask of `-numpy.inf` to any token that breaks our desired schema. For example, when expecting a number, all alphabetical tokens are masked.
+
+4. Selection: We use `numpy.argmax` to select the highest probability token among the allowed tokens.
+
+5. Iteration: This token is appended to our sequence, and the loop repeats until the structural condition is met (e.g., a newline or the end of a valid number).
 
 ### Choice of design:
 
-todo
+The architecture is built around Separation of Concerns and strict type validation:
+
+- **Validation Layer** `(src/parser)`: Uses `pydantic` and `TypeAdapter` to rigorously validate input JSON schemas (`functions_definition.json` and `function_calling_tests.json`) before any LLM processing.
+It create the `output` folder and file if they don't exist.
+
+- **Engine Layer** `(src/engine)`: The `CallMeMaybe` class acts as the orchestrator. It separates the generation into two distinct phases: determining the function name, and then extracting the specific parameters.\
+`llm_instructions_model` will be used to give instructions and context to the LLM.\
+`prompt` will be used to store all promps and give it to the main class.
+`Vocabulary` contains all vocabulary and logics used by the LLM.
+`Output` will store results and write them in the output file.
+
+- **Utilities** `(src/utils)`: A custom timing decorator (`func_timer`) using `perf_counter` ensures we can monitor performance to stay within the 5-minute execution limit.
 
 ### Performance analysis:
 
-todo
+By restricting the LLM's vocabulary dynamically rather than relying on heavy, iterative self-correction prompts, the generation speed is significantly optimized. The model only generates the exact characters needed for the arguments (e.g., stopping early using a max_tokens limit of 42 for numbers or 100 for strings). This ensures the program handles the entire evaluation suite well under the maximum allowed timeframe.\
+The negative value on that is that the LLM is not very "smart". It will choose the best functions among all on those yoou are available, but if a promps is ambiguous *(like "What is the essence of life")*. It will choose the best function, for him, that correspond to the promp. We can correct that by increasing the instructions and the generating phase, by adding more rules for example, but it's not the main focus of this subject.
 
 ### Challenges faced:
 
-todo
+**Understanding the subject**. It was very, very, very difficult to know what to do after the parsing. Thanks to some of my peers, I managed to understand the project after a bit of strugling.
+
+**Prompt Collapse**: Small models (like Qwen 0.6B) struggle with long lists of negative constraints ("Do not calculate", "Do not change case"). The solution was to transition to structured the context and give only the thing that was necessary to him.
+
+**Traps**: When giving empty string, max int value, and other things like that, the LLM was collapsing, crashing or enter an infinite loop. The solution was to limit the number of try the LLM can do before stopping the generation.
 
 ### Testing strategy:
 
-todo
+**Function Calling Accuracy**: Injecting edge-case prompts such as extremely large numbers (999999999999999.99), negative floats (-0.0000001), empty strings (''), and complex punctuation to ensure the extraction engine works. It do not give the best answer, but it works.
+
+**Robustness & Error Handling**: Manually corrupting the input JSON files, providing non-existent model paths, and passing empty prompts to confirm the program safely catches exceptions and prints coherent error messages using the Rich library instead of crashing with native stack traces.
 
 ---
 
