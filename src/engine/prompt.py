@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 12:35:00 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/23 13:53:55 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -81,6 +81,12 @@ class Prompt(BaseModel):
         """
         for prompt in self.functions_calling:
             formatted_prompt = prompt.prompt
+
+            # Skip if the prompt is empty
+            if not formatted_prompt:
+                if self.debug:
+                    print("Empty promp. Skipping.")
+                continue
 
             if self.debug:
                 print_log(f"-DEBUG-\nNew prompt added: {formatted_prompt}")

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 22:57:25 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/23 13:57:17 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -366,7 +366,9 @@ class CallMeMaybe(BaseModel):
         current_output: str = ""
         current_tokens: list[int] = []
         max_tokens: int = 42
-        autorised_char: set[str] = set('-0123456789.\n')
+        valid_chars = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '\n', '-'
+        }
 
         # Create a set to have all validate tokens from the dict_vocab
         valid_tokens: set[int] = set()
@@ -381,7 +383,7 @@ class CallMeMaybe(BaseModel):
                 continue
 
             # Check if all char of the token are autorised
-            if all(char in autorised_char for char in clean_token_str):
+            if all(char in valid_chars for char in clean_token_str):
                 valid_tokens.add(token_id)
 
         while len(current_tokens) < max_tokens:
@@ -406,6 +408,12 @@ class CallMeMaybe(BaseModel):
 
             # Convert token to string
             token_string: str = dict_vocab.get(best_token_id, "")
+
+            # Clear the output
+            token_string = (
+                token_string.replace('Ġ', '').replace('Ċ', '\n').
+                replace('\u2581', '').strip()
+            )
 
             # If token is empty, break the loop
             if not token_string:
@@ -438,7 +446,7 @@ class CallMeMaybe(BaseModel):
             # Verification: if the number if complete
             try:
                 float(current_output)
-                if token_string not in ('0123456789.-'):
+                if token_string not in valid_chars:
                     break
             except ValueError:
                 pass
