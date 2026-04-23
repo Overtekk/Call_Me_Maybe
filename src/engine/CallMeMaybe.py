@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/23 14:06:37 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/23 14:06:46 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -417,7 +417,7 @@ class CallMeMaybe(BaseModel):
 
             # If token is empty, break the loop
             if not token_string:
-                brea
+                break
 
             output_to_verify: str = current_output + token_string
 
