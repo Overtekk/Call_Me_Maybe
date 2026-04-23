@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/20 17:28:32 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 11:10:29 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/23 14:25:15 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -84,7 +84,12 @@ class Output(BaseModel):
                 case 'parameters':
                     data['parameters'] = llm_generation_result
                 case _:
-                    data['unkown'] = llm_generation_result
+                    print_log(
+                        "[yellow]"
+                        "Warning, unknown parameters: "
+                        f"'{llm_generation_result}'"
+                        "[/yellow]"
+                    )
 
         # Add to the list
         self._result_data.append(data)
