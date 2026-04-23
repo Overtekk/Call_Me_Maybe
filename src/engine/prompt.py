@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/23 13:53:55 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/23 14:18:42 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -65,7 +65,7 @@ class Prompt(BaseModel):
             if the queue is depleted.
         """
         if self._list_prompts:
-            return self._list_prompts.pop(-1)
+            return self._list_prompts.pop(0)
 
         else:
             return "empty"
@@ -92,6 +92,3 @@ class Prompt(BaseModel):
                 print_log(f"-DEBUG-\nNew prompt added: {formatted_prompt}")
 
             self._list_prompts.append(formatted_prompt)
-
-        # Reverse the order
-        self._list_prompts.reverse()
