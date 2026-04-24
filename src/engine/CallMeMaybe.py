@@ -6,9 +6,18 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 15:23:41 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 15:33:38 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
+"""
+Core engine module for constrained LLM generation.
+
+This module defines the CallMeMaybe orchestrator class, which handles the
+interaction with the underlying LLM to generate structured JSON function calls.
+It implements constrained decoding techniques (logit masking) to ensure the
+LLM only outputs valid function names and appropriately typed parameters
+(strings or numbers) based on predefined JSON schemas.
+"""
 
 from typing import Any, Dict, List
 from numpy.typing import NDArray
@@ -28,6 +37,23 @@ from src.debug import debug_print_generating_process
 
 
 class CallMeMaybe(BaseModel):
+    """
+    Orchestrator for constrained LLM function calling generation.
+
+    This class initializes the LLM and its vocabulary, pre-computes valid token
+    sequences, and drives the generation loop. It restricts the model's output
+    probabilities to force the generation of predefined function names and
+    valid data types, while implementing a retry pattern for error recovery.
+
+    Attributes:
+    model_name (str): The Hugging Face repository ID of the model to load.
+    functions_definition_path (List[JsonFunctionDefinition]): Pre-parsed JSON
+        schemas defining the available functions.
+    visualizer (bool): Flag to enable real-time visualization of the generated
+        tokens in the terminal.
+    debug (bool): Flag to enable detailed logging and generation process
+        tracking.
+    """
     model_name: str = Field(
         description="Name of the model"
     )
@@ -53,6 +79,13 @@ class CallMeMaybe(BaseModel):
     )
 
     def model_post_init(self, context: Any) -> None:
+        """
+        Initialize the private attributes after Pydantic validation.
+
+        Loads the specified LLM, initializes the vocabulary manager, builds the
+        internal function dictionary, and pre-computes the token sequences for
+        all valid function names to optimize the constrained decoding loop.
+        """
         try:
             if self.debug:
                 print_log("Initializing LLM...")
@@ -86,6 +119,17 @@ class CallMeMaybe(BaseModel):
         return super().model_post_init(context)
 
     def run(self, prompt: str) -> dict[Any, Any]:
+        """
+        Execute the full function calling generation process for a given
+        prompt.
+
+        Args:
+        prompt (str): The raw natural language request from the user.
+
+        Returns:
+        dict[Any, Any]: A dictionary containing the generated 'name' of the
+        function and its populated 'parameters'.
+        """
         dict_vocab: dict[int, str] = self._vocab.get_id_to_token_vocab()
         output_result: dict[Any, Any] = {}
 
@@ -154,6 +198,19 @@ class CallMeMaybe(BaseModel):
 
     def generate_function_name(self, prompt: str,
                                dict_vocab: Dict[int, str]) -> str:
+        """
+        Generate a valid function name using strict logit masking.
+
+        Forces the LLM to output only tokens that match the exact sequence of
+        one of the predefined function names from the JSON schemas.
+
+        Args:
+        prompt (str): The formatted instructions and user request.
+        dict_vocab (Dict[int, str]): The loaded tokenizer vocabulary mapping.
+
+        Returns:
+        str: The exact, validated function name.
+        """
         # Get prompts token
         prompt_input_ids: list[int] = self._model.encode(prompt)[0].tolist()
 
@@ -234,7 +291,21 @@ class CallMeMaybe(BaseModel):
 
     def generate_function_param(self, prompt: str, func_name: str,
                                 dict_vocab: Dict[int, str]) -> Dict[Any, Any]:
+        """
+        Orchestrate the generation of parameters for the identified function.
 
+        Iterates through the required parameters defined in the schema and
+        calls the appropriate generation method (string or number) based on the
+        expected data type.
+
+        Args:
+        prompt (str): The base formatted instructions.
+        func_name (str): The previously generated function name.
+        dict_vocab (Dict[int, str]): The loaded tokenizer vocabulary mapping.
+
+        Returns:
+        Dict[Any, Any]: A dictionary of generated parameter keys and values.
+        """
         func_def = self._functions_def_dict.get(
             func_name
         )
@@ -278,6 +349,22 @@ class CallMeMaybe(BaseModel):
     def gen_type_str_param(self, prompt: str, output_generation: str,
                            func_param_name: str,
                            dict_vocab: Dict[int, str]) -> str:
+        """
+        Generate a valid string value for a specific function parameter.
+
+        Generates tokens sequentially until a stop condition is met (such as a
+        newline or an LLM-specific end-of-sequence token). Cleans the output
+        from tokenizer artifacts and removes surrounding quotes.
+
+        Args:
+        prompt (str): The base formatted instructions.
+        output_generation (str): The context of previously generated parameters
+        func_param_name (str): The specific parameter currently being generated
+        dict_vocab (Dict[int, str]): The loaded tokenizer vocabulary mapping.
+
+        Returns:
+        str: The cleaned and validated string parameter value.
+        """
         # Get prompts token
         prompt_input_ids: list[int] = self._get_prompt_input_ids(
             prompt, output_generation, func_param_name
@@ -353,6 +440,26 @@ class CallMeMaybe(BaseModel):
     def gen_type_number_param(self, prompt: str, output_generation: str,
                               func_param_name: str,
                               dict_vocab: Dict[int, str]) -> float | None:
+        """
+        Generate a valid numerical value using constrained decoding and retry
+        patterns.
+
+        Restricts the LLM's token generation to valid mathematical characters
+        (-0123456789.) and validates the ongoing string to prevent malformed
+        numbers (e.g., multiple decimals). Implements a retry pattern that
+        alters the LLM context if the generation fails or produces an
+        infinite/invalid number.
+
+        Args:
+        prompt (str): The base formatted instructions.
+        output_generation (str): The context of previously generated parameters
+        func_param_name (str): The specific parameter currently being generated
+        dict_vocab (Dict[int, str]): The loaded tokenizer vocabulary mapping.
+
+        Returns:
+        float | None: The validated numerical value, or None if all retry
+        attempts fail.
+        """
         # Get prompts token
         prompt_input_ids: list[int] = self._get_prompt_input_ids(
             prompt, output_generation, func_param_name
@@ -512,6 +619,21 @@ class CallMeMaybe(BaseModel):
 
     def _get_prompt_input_ids(self, prompt: str, output_generation: str,
                               func_param_name: str) -> list[int]:
+        """
+        Construct and encode the prompt for parameter generation.
+
+        Appends the previously generated parameters and the current parameter
+        key to the base prompt, then encodes the entire string into token IDs.
+
+        Args:
+        prompt (str): The base formatted instructions and user request.
+        output_generation (str): The string representation of already generated
+            parameters.
+        func_param_name (str): The name of the parameter to generate next.
+
+        Returns:
+        list[int]: The encoded list of input IDs ready for the LLM.
+        """
         # Add the previous output_generation to the prompt and the func
         # parameter name
         new_prompt: str = (
@@ -526,5 +648,19 @@ class CallMeMaybe(BaseModel):
         return prompt_input_ids
 
     def _clean_token(self, token: str) -> str:
+        """
+        Normalize tokenizer-specific artifacts into standard characters.
+
+        Converts special Unicode characters used by different LLMs (like Qwen's
+        Byte-Pair Encoding spaces or Llama's SentencePiece spaces) into
+        standard Python spaces and newlines to ensure model-agnostic text
+        processing.
+
+        Args:
+        token (str): The raw string token generated by the model.
+
+        Returns:
+        str: The normalized string token.
+        """
         return (token.replace('\u0120', ' ').replace('\u010a', '\n').
                 replace('\u2581', ' '))
