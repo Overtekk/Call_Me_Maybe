@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 09:59:42 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 10:03:50 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -159,8 +159,9 @@ class CallMeMaybe(BaseModel):
         # Generation
         current_output: str = ""
         current_token: list[int] = []
+        max_tokens: int = 100
 
-        while (True):
+        while len(current_token) < max_tokens:
             # Combined all tokens
             all_token: list[int] = prompt_input_ids + current_token
 
