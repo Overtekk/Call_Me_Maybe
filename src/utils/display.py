@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/27 09:46:37 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 17:23:33 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 09:59:39 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -88,7 +88,7 @@ def print_rule(message: str, color: str = "bold blue") -> None:
     standard_console.rule(message, style=style_rule)
 
 
-def print_vizualizer(message: str) -> None:
+def print_visualizer(message: str) -> None:
     """
     Display a dynamically updating message on the standard stream.
     Allows in-place updates by modifying the 'end' parameter.

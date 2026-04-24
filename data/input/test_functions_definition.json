@@ -63,6 +63,27 @@
     }
   },
   {
+    "name": "fn_get_nb_angles",
+    "description": "Get how many angles in a form.",
+    "parameters": {
+      "squares": {
+        "type": "number"
+      }
+    },
+    "returns": {
+      "type": "number"
+    }
+  },
+  {
+    "name": "fn_find_bunny",
+    "description": "Find the bunny hidden.",
+    "parameters": {
+    },
+    "returns": {
+      "type": "string"
+    }
+  },
+  {
     "name": "fn_substitute_string_with_regex",
     "description": "Replace all occurrences matching a regex pattern in a string.",
     "parameters": {

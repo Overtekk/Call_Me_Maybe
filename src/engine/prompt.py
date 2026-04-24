@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 12:04:02 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/23 14:18:42 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 09:49:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -79,16 +79,27 @@ class Prompt(BaseModel):
         retrieval.
         Logs the process if debug mode is active.
         """
+        skipped_prompt: int = 0
+
         for prompt in self.functions_calling:
             formatted_prompt = prompt.prompt
 
             # Skip if the prompt is empty
-            if not formatted_prompt:
+            if not formatted_prompt or formatted_prompt.isspace():
                 if self.debug:
                     print("Empty promp. Skipping.")
+                skipped_prompt += 1
                 continue
 
             if self.debug:
                 print_log(f"-DEBUG-\nNew prompt added: {formatted_prompt}")
 
             self._list_prompts.append(formatted_prompt)
+
+        if skipped_prompt > 0:
+            print_log(
+                "[bright_yellow]"
+                "[WARNING]\n"
+                f"{skipped_prompt} prompts skipped.\n\n"
+                "[/bright_yellow]"
+                )

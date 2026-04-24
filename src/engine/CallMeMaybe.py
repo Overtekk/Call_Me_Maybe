@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 09:41:47 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 09:59:42 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -18,7 +18,7 @@ import numpy
 from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
-from src.utils import print_log, print_vizualizer, print_rule
+from src.utils import print_log, print_visualizer, print_rule
 from src.engine.llm_instructions_model import (get_name_instructions,
                                                get_param_instructions)
 from src.engine.Vocabulary import Vocabulary
@@ -207,7 +207,7 @@ class CallMeMaybe(BaseModel):
             current_output += token_string
 
             if self.visualizer:
-                print_vizualizer(f'\r{current_output}')
+                print_visualizer(f'\r{current_output}')
 
             # Avoid infinite loop if token is empty
             if not token_string:
@@ -263,7 +263,7 @@ class CallMeMaybe(BaseModel):
                 )
 
             if self.visualizer:
-                print_vizualizer(f'\n{output_result[param_name]}\n')
+                print_visualizer(f'\n{output_result[param_name]}\n')
 
         if self.debug:
             print_log(f"[green]Generated params: '{output_result}'[/green]\n")
@@ -310,7 +310,7 @@ class CallMeMaybe(BaseModel):
             current_output += token_string
 
             if self.visualizer:
-                print_vizualizer(f'\r{current_output}')
+                print_visualizer(f'\r{current_output}')
 
             # If end a line detected, break the loop
             if '\n' in current_output:
@@ -442,7 +442,7 @@ class CallMeMaybe(BaseModel):
             current_output = output_to_verify
 
             if self.visualizer:
-                print_vizualizer(f'\r{current_output}')
+                print_visualizer(f'\r{current_output}')
 
             # Verification: if the number if complete
             try:
