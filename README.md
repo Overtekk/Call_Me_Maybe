@@ -233,6 +233,18 @@ The LLM have a auto-retry feature if a generation doesn't work. It will have a n
 
 **Robustness & Error Handling**: Manually corrupting the input JSON files, providing non-existent model paths, and passing empty prompts to confirm the program safely catches exceptions and prints coherent error messages using the Rich library instead of crashing with native stack traces.
 
+## 🖱️ Comprehensive test suite
+
+### Run
+```bash
+make tester
+or
+uv run python -m unittest discover -s tests
+```
+
+This will launch the test suite to test some functions and methods. It will only test if a json input in valid, or not.
+It's not completed because I juste wanted to test it and didn´t know what tests to do.
+
 ---
 
 ## 📚 Resources

@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/02/23 16:32:54 by roandrie        #+#    #+#               #
-#  Updated: 2026/03/27 10:24:58 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 15:53:20 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -22,12 +22,14 @@ SRC_MODULE	=	src
 INSTALL_UV	=	curl -LsSf https://astral.sh/uv/install.sh | sh
 CHECK_UV	=	command -v uv
 UV_WARN		=	--link-mode copy
+LINT_TESTER =	src \
+				tests
 
 # ===================
 # =		RULES		=
 # ===================
 
-.PHONY:		all install run debug clean lint lint-strict delete-uv
+.PHONY:		all install run debug clean lint lint-strict delete-uv tester
 .SILENT:
 
 all:		install run
@@ -59,16 +61,16 @@ lint:
 			@clear
 			@echo "$(BMAGENTA)Running standard linting...$(RESET)"
 			@status=0; \
-			$(FLAKE8) $(SRC_MODULE) || status=$$?; \
-			$(MYPY) $(SRC_MODULE) $(MYPY_FLAGS) || status=$$?; \
+			$(FLAKE8) $(LINT_TESTER) || status=$$?; \
+			$(MYPY) $(LINT_TESTER) $(MYPY_FLAGS) || status=$$?; \
 			exit $$status
 
 lint-strict:
 			@clear
 			@echo "$(BMAGENTA)Running strict linting...$(RESET)"
 			@status=0; \
-			$(FLAKE8) $(SRC_MODULE) || status=$$?; \
-			$(MYPY) $(SRC_MODULE) $(MYPY_FLAGS) --strict || status=$$?; \
+			$(FLAKE8) $(LINT_TESTER) || status=$$?; \
+			$(MYPY) $(LINT_TESTER) $(MYPY_FLAGS) --strict || status=$$?; \
 			exit $$status
 
 delete-uv:
@@ -78,6 +80,11 @@ delete-uv:
 			else \
 					echo "$(BRED)UV not installed. Cannot delete. Abording.$(RESET)"; \
 			fi
+
+tester:
+			install
+			uv run python -m unittest discover -s tests
+
 
 # ===================
 # =		COLORS		=
