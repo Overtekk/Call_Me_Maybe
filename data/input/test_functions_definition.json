@@ -75,8 +75,53 @@
     }
   },
   {
+    "name": "fn_get_recipe",
+    "description": "Find a recipe name in a database.",
+    "parameters": {
+      "ingredients": {
+        "type": "string"
+      }
+    },
+    "returns": {
+      "type": "string"
+    }
+  },
+  {
+    "name": "fn_search",
+    "description": "Search for a answer about something.",
+    "parameters": {
+      "question": {
+        "type": "string"
+      }
+    },
+    "returns": {
+      "type": "string"
+    }
+  },
+  {
+    "name": "fn_life",
+    "description": "Get the response of the life, universe and everything else (which is 42).",
+    "parameters": {
+      "number": {
+        "type": "number"
+      }
+    },
+    "returns": {
+      "type": "number"
+    }
+  },
+  {
     "name": "fn_find_bunny",
     "description": "Find the bunny hidden.",
+    "parameters": {
+    },
+    "returns": {
+      "type": "string"
+    }
+  },
+{
+    "name": "fn_unknown",
+    "description": "Used when a prompt is weird, don't match any other function",
     "parameters": {
     },
     "returns": {
