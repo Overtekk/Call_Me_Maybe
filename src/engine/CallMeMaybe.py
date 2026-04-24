@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 09:19:40 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 09:41:47 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -19,7 +19,7 @@ from llm_sdk import Small_LLM_Model
 from pydantic import BaseModel, Field, PrivateAttr
 
 from src.utils import print_log, print_vizualizer, print_rule
-from src.engine.llm_instructions_model import (get_instructions,
+from src.engine.llm_instructions_model import (get_name_instructions,
                                                get_param_instructions)
 from src.engine.Vocabulary import Vocabulary
 from src.models import DataType, JsonFunctionDefinition
@@ -90,7 +90,7 @@ class CallMeMaybe(BaseModel):
 
         # Function name
         # Get the formatted instructions for the LLM
-        instructions_func_name: str = get_instructions(
+        instructions_func_name: str = get_name_instructions(
             self.functions_definition_path, prompt
             )
 

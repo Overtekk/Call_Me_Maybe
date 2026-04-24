@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/04 11:02:48 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/22 14:55:53 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 09:41:32 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -18,16 +18,13 @@ It formats the available functions and parameters to enforce constrained
 generation for both function name selection and parameter extraction.
 """
 
-from typing import Any, List
-
-import json
-import random
+from typing import List
 
 from src.models import JsonFunctionDefinition
 
 
-def get_instructions(func_def: List[JsonFunctionDefinition],
-                     user_prompt: str) -> str:
+def get_name_instructions(func_def: List[JsonFunctionDefinition],
+                          user_prompt: str) -> str:
     """
     Construct the prompt for function name selection.
 
@@ -64,29 +61,21 @@ def get_instructions(func_def: List[JsonFunctionDefinition],
         )
 
     # Model for the output
-    example_func: JsonFunctionDefinition = random.choice(func_def)
-    example_param: str = list(example_func.parameters.keys())[0]
-
-    task_model_data: dict[str, Any] = {
-        "prompt": f"Use {example_func.name}",
-        "name": f"{example_func.name}",
-        "parameters": {
-            "param": f"{example_param}"
-        }
-    }
-
-    formatted_json: str = json.dumps(task_model_data, indent=2)
-
-    model: str = f"Task Model:\n{formatted_json}\n"
+    example_func: JsonFunctionDefinition = func_def[0]
+    example_output: str = (
+        "Example:\n"
+        f"User request: Use {example_func.name}.\n"
+        f"The best matching function name is: {example_func.name}\n\n"
+    )
 
     # User prompt
-
     user_formated_prompt: str = (
-        f"User request: {user_prompt}.\nThe best matching function name is: "
+        f"User request: {user_prompt}.\n"
+        "The best matching function name is: "
     )
 
     return (
-        task + function_def_str + model + user_formated_prompt
+        task + function_def_str + example_output + user_formated_prompt
     )
 
 
