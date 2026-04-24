@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/04/13 11:41:33 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 09:23:57 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 14:51:17 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 """
@@ -69,7 +69,6 @@ class Vocabulary(BaseModel):
             to their string representations. Useful for decoding outputs.
         """
         return self._id_to_token
-
 
     def _load_vocab(self, path: str) -> None:
         """

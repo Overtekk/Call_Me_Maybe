@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 14:47:30 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 14:51:09 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -494,7 +494,7 @@ class CallMeMaybe(BaseModel):
             return None
 
     def _get_prompt_input_ids(self, prompt: str, output_generation: str,
-                             func_param_name: str) -> list[int]:
+                              func_param_name: str) -> list[int]:
         # Add the previous output_generation to the prompt and the func
         # parameter name
         new_prompt: str = (
