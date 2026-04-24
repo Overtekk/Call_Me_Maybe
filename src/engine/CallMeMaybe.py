@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 15:16:50 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 15:23:41 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -431,7 +431,7 @@ class CallMeMaybe(BaseModel):
                 elif output_to_verify.count('-') >= 2:
                     is_valid = False
                 elif (output_to_verify.count('-') == 1 and
-                    output_to_verify[0] != '-'):
+                        output_to_verify[0] != '-'):
                     is_valid = False
 
                 if not is_valid:
@@ -503,10 +503,9 @@ class CallMeMaybe(BaseModel):
                     )
 
                 token_to_inject: list[int] = (
-                    self._model.encode("\n").tolist()
+                    self._model.encode("\n")[0].tolist()
                 )
-                prompt_input_ids: list[int] = (prompt_input_ids +
-                                                token_to_inject)
+                prompt_input_ids = prompt_input_ids + token_to_inject
                 continue
 
         return None
