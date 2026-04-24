@@ -268,6 +268,8 @@ The negative value on that is that the LLM is not very "smart". It will choose t
 - **Help writing docstrigs** ‒ ensure that the docstrings is clear and short. I writes something and give it to have a better writing style than me because docstrings is important.
 - **Help improving the prompt** - enhance my previous prompt to remove what was unclear, and go directly to the topic.
 - **Refactoring** - help to refactor my code and learn how to write better code.
+- **Optmization** - help to optimize part of my code (like create the toquence sequence only once, and not for each prompts)
+- **Help with bug** - when I had some bugs and didn't know how to fix, I ask AI to help me like a teacher.
 
 ---
 

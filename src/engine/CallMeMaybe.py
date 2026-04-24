@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/23 14:10:28 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 09:19:40 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -47,6 +47,9 @@ class CallMeMaybe(BaseModel):
     _functions_def_dict: dict[str, JsonFunctionDefinition] = (
         PrivateAttr(default_factory=dict)
     )
+    _token_sequences: dict[str, list[int]] = (
+        PrivateAttr(default_factory=dict)
+    )
 
     def model_post_init(self, context: Any) -> None:
         try:
@@ -67,6 +70,11 @@ class CallMeMaybe(BaseModel):
             # Convert the JSON object to a dict
             for func in self.functions_definition_path:
                 self._functions_def_dict[func.name] = func
+
+            # Pre-compute token sequences
+            for func in self.functions_definition_path:
+                ids: list[int] = self._model.encode(func.name)[0].tolist()
+                self._token_sequences[func.name] = ids
 
             if self.visualizer:
                 print_log("LLM loaded! Starting generation...\n")
@@ -145,13 +153,6 @@ class CallMeMaybe(BaseModel):
 
     def generate_function_name(self, prompt: str,
                                dict_vocab: Dict[int, str]) -> str:
-        token_sequences: Dict[str, List[int]] = {}
-
-        # Get functions name to token
-        for func in self.functions_definition_path:
-            input_ids: list[int] = self._model.encode(func.name)[0].tolist()
-            token_sequences[func.name] = input_ids
-
         # Get prompts token
         prompt_input_ids: list[int] = self._model.encode(prompt)[0].tolist()
 
@@ -173,7 +174,7 @@ class CallMeMaybe(BaseModel):
             for func in self.functions_definition_path:
 
                 if func.name.startswith(current_output):
-                    name_encoding = token_sequences[func.name]
+                    name_encoding = self._token_sequences[func.name]
                     next_position = len(current_token)
 
                     if next_position < len(name_encoding):
