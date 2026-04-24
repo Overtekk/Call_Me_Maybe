@@ -6,7 +6,7 @@
 #  By: roandrie <roandrie@student.42lehavre.fr   +#+  +:+       +#+         #
 #                                              +#+#+#+#+#+   +#+            #
 #  Created: 2026/03/31 17:19:16 by roandrie        #+#    #+#               #
-#  Updated: 2026/04/24 14:51:09 by roandrie        ###   ########.fr        #
+#  Updated: 2026/04/24 15:16:50 by roandrie        ###   ########.fr        #
 #                                                                           #
 # ************************************************************************* #
 
@@ -362,6 +362,7 @@ class CallMeMaybe(BaseModel):
         current_output: str = ""
         current_tokens: list[int] = []
         max_tokens: int = 42
+        max_attempts: int = 3
         valid_chars = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '\n', '-'
         }
@@ -388,110 +389,127 @@ class CallMeMaybe(BaseModel):
             list(valid_tokens), dtype=numpy.int64
         )
 
-        while len(current_tokens) < max_tokens:
-            # Combined all tokens
-            all_token: list[int] = prompt_input_ids + current_tokens
+        for attempt in range(max_attempts):
+            current_output = ""
+            current_tokens = []
 
-            # Get the logits token
-            logits: list[float] = self._model.get_logits_from_input_ids(
-                all_token
-            )
+            while len(current_tokens) < max_tokens:
+                # Combined all tokens
+                all_token: list[int] = prompt_input_ids + current_tokens
 
-            # Mask token we don't want
-            logits_masked.fill(-numpy.inf)
-            logits_masked[valid_ids_array] = (
-                numpy.array(logits)[valid_ids_array]
-            )
+                # Get the logits token
+                logits: list[float] = self._model.get_logits_from_input_ids(
+                    all_token
+                )
 
-            # Select best token
-            best_token_id: int = int(numpy.argmax(logits_masked))
-            current_tokens.append(best_token_id)
+                # Mask token we don't want
+                logits_masked.fill(-numpy.inf)
+                logits_masked[valid_ids_array] = (
+                    numpy.array(logits)[valid_ids_array]
+                )
 
-            # Convert token to string
-            raw_token: str = dict_vocab.get(best_token_id, "")
+                # Select best token
+                best_token_id: int = int(numpy.argmax(logits_masked))
+                current_tokens.append(best_token_id)
 
-            # If token is empty, break the loop
-            if not raw_token:
-                break
+                # Convert token to string
+                raw_token: str = dict_vocab.get(best_token_id, "")
 
-            # Clean the token
-            token_string: str = self._clean_token(raw_token).strip()
-            output_to_verify: str = current_output + token_string
-
-            # Validation rules
-            is_valid: bool = True
-
-            if output_to_verify.count('.') >= 2:
-                is_valid = False
-            elif output_to_verify.count('-') >= 2:
-                is_valid = False
-            elif (output_to_verify.count('-') == 1 and
-                  output_to_verify[0] != '-'):
-                is_valid = False
-
-            if not is_valid:
-                break
-
-            # Add the verified output to the true output
-            current_output = output_to_verify
-
-            if self.visualizer:
-                print_visualizer(f'\r{current_output}')
-
-            # Verification: if the number if complete
-            try:
-                float(current_output)
-                if token_string not in valid_chars:
+                # If token is empty, break the loop
+                if not raw_token:
                     break
-            except ValueError:
-                pass
 
-            # Verification: if '\n' is found, extract and return it
-            if '\n' in current_output:
-                current_output = current_output.split('\n')[0]
+                # Clean the token
+                token_string: str = self._clean_token(raw_token).strip()
+                output_to_verify: str = current_output + token_string
+
+                # Validation rules
+                is_valid: bool = True
+
+                if output_to_verify.count('.') >= 2:
+                    is_valid = False
+                elif output_to_verify.count('-') >= 2:
+                    is_valid = False
+                elif (output_to_verify.count('-') == 1 and
+                    output_to_verify[0] != '-'):
+                    is_valid = False
+
+                if not is_valid:
+                    break
+
+                # Add the verified output to the true output
+                current_output = output_to_verify
+
+                if self.visualizer:
+                    print_visualizer(f'\r{current_output}')
+
+                # Verification: if the number if complete
                 try:
-                    # Verify that current output is float type
-                    value: float = float(current_output)
+                    float(current_output)
+                    if token_string not in valid_chars:
+                        break
+                except ValueError:
+                    pass
 
-                    # Verify that is not infinite
-                    if not math.isfinite(value):
-                        if self.debug:
-                            print_log(
+                # Verification: if '\n' is found, extract and return it
+                if '\n' in current_output:
+                    current_output = current_output.split('\n')[0]
+                    try:
+                        # Verify that current output is float type
+                        value: float = float(current_output)
+
+                        # Verify that is not infinite
+                        if not math.isfinite(value):
+                            if self.debug:
+                                print_log(
+                                    "[yellow]"
+                                    "[WARNING]"
+                                    "Non-finite number detected: "
+                                    f"'{current_output}' > defaulting to 0.0"
+                                    "[/yellow]"
+                                )
+                                return 0.0
+
+                        return value
+                    except ValueError:
+                        break
+
+            # Clean the output
+            clean_output: str = ""
+            for char in current_output:
+                if char in ('-0123456789.'):
+                    clean_output += char
+
+            try:
+                result: float = float(clean_output)
+
+                if not math.isfinite(result):
+                    if self.debug:
+                        print_log(
                                 "[yellow]"
                                 "[WARNING]"
                                 "Non-finite number detected: "
                                 f"'{current_output}' > defaulting to 0.0"
                                 "[/yellow]"
-                            )
-                            return 0.0
+                        )
+                    return 0.0
 
-                    return value
-                except ValueError:
-                    return None
-
-        # Clean the output
-        clean_output: str = ""
-        for char in current_output:
-            if char in ('-0123456789.'):
-                clean_output += char
-
-        try:
-            result: float = float(clean_output)
-
-            if not math.isfinite(result):
-                if self.debug:
+                return result
+            except ValueError:
+                if self.debug or self.visualizer:
                     print_log(
-                            "[yellow]"
-                            "[WARNING]"
-                            "Non-finite number detected: "
-                            f"'{current_output}' > defaulting to 0.0"
-                            "[/yellow]"
+                        f"Attempt {attempt + 1} failed. Modifying "
+                        "context and retrying..."
                     )
-                return 0.0
 
-            return result
-        except ValueError:
-            return None
+                token_to_inject: list[int] = (
+                    self._model.encode("\n").tolist()
+                )
+                prompt_input_ids: list[int] = (prompt_input_ids +
+                                                token_to_inject)
+                continue
+
+        return None
 
     def _get_prompt_input_ids(self, prompt: str, output_generation: str,
                               func_param_name: str) -> list[int]:
