@@ -217,6 +217,8 @@ It create the `output` folder and file if they don't exist.
 By restricting the LLM's vocabulary dynamically rather than relying on heavy, iterative self-correction prompts, the generation speed is significantly optimized. The model only generates the exact characters needed for the arguments (e.g., stopping early using a max_tokens limit of 42 for numbers or 100 for strings). This ensures the program handles the entire evaluation suite well under the maximum allowed timeframe.\
 The negative value on that is that the LLM is not very "smart". It will choose the best functions among all on those yoou are available, but if a promps is ambiguous *(like "What is the essence of life")*. It will choose the best function, for him, that correspond to the promp. We can correct that by increasing the instructions and the generating phase, by adding more rules for example, but it's not the main focus of this subject.
 
+The LLM have a auto-retry feature if a generation doesn't work. It will have a new prompt to try, and start the generation again.
+
 ### Challenges faced:
 
 **Understanding the subject**. It was very, very, very difficult to know what to do after the parsing. Thanks to some of my peers, I managed to understand the project after a bit of strugling.
